@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - "master"
+permissions:
+  contents: write
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run server:test
+
+      - name: Build React (vite)
+        run: npm run react:build
+
+      - name: Prepare release artifacts
+        shell: pwsh
+        run: |
+          mkdir -Force artifacts
+          Copy-Item -Recurse dist/* -Destination "artifacts" -Force
+          Write-Host "Release artifacts prepared in artifacts/"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: artifacts/
+
+      # Now create or replace the GitHub Release (after artifacts uploaded)
+      - name: Create GitHub Release
+        id: create_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          gh release delete $tag -y || true
+          gh release create $tag --title "Language Learning $tag" --generate-notes
+
+      # Rollback step: if anything after this fails, delete the created release and fail early
+      - name: Rollback on failure
+        if: failure() && steps.create_release.outcome == 'success'
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          Write-Host "Release failed — attempting rollback for $tag"
+          gh release delete $tag -y || Write-Host "Rollback: release $tag not present or already deleted"
+          Remove-Item -Recurse -Force artifacts -ErrorAction SilentlyContinue || Write-Host "No artifacts to remove"

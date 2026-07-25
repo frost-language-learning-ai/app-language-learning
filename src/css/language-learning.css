@@ -1,0 +1,461 @@
+.ll-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  color: #132a2b;
+}
+
+.ll-header {
+  margin-bottom: 12px;
+}
+
+.ll-tab-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ll-settings-label {
+  display: grid;
+  gap: 6px;
+  max-width: 360px;
+}
+
+.ll-error-banner {
+  background: #ffe6e6;
+  border: 1px solid #d86b6b;
+  color: #6c1313;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ll-error-close {
+  background: #fff;
+  border: 1px solid #b64f4f;
+  color: #7e2020;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.ll-card {
+  background: #f6fbfb;
+  border: 1px solid #c7dbdd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.ll-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ll-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ll-input,
+.ll-textarea {
+  border: 1px solid #9eb6b8;
+  border-radius: 8px;
+  padding: 8px;
+  width: 100%;
+}
+
+.ll-input-sm {
+  width: 72px;
+}
+
+.ll-textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.ll-button {
+  border: 1px solid #2f5e66;
+  background: #fff;
+  color: #14393e;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ll-button-primary {
+  background: #205f64;
+  color: #fff;
+}
+
+.ll-preview {
+  margin-top: 12px;
+}
+
+.ll-notes {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #d3e4e6;
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px;
+}
+
+.ll-ai-answer {
+  margin-top: 10px;
+  min-height: 120px;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #bfd7d9;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.ll-note-item {
+  border-bottom: 1px dashed #dce9eb;
+  padding: 6px 0;
+}
+
+.ll-note-item:last-child {
+  border-bottom: none;
+}
+
+.ll-wave-compare {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ll-wave-compare-advanced {
+  margin-top: 12px;
+  border: 1px solid #bfd6d8;
+  border-radius: 10px;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.ll-wave-canvas {
+  width: 100%;
+  height: auto;
+  border: 1px solid #d3e6e8;
+  border-radius: 8px;
+  background: #f7fcfc;
+}
+
+.ll-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #335c5f;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.ll-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-right: 4px;
+}
+
+.ll-dot-model {
+  background: #2c7a7b;
+}
+
+.ll-dot-user {
+  background: #3366cc;
+}
+
+.ll-dot-mismatch {
+  background: #e64949;
+}
+
+.ll-match-rate {
+  margin: 10px 0 4px;
+  font-weight: 700;
+  color: #1f4e53;
+}
+
+.ll-mismatch-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: #4b6163;
+}
+
+.ll-phoneme-panel {
+  margin-top: 12px;
+  border: 1px solid #d7e5e6;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fbfefe;
+}
+
+.ll-phoneme-table-wrap {
+  overflow-x: auto;
+}
+
+.ll-phoneme-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ll-phoneme-table th,
+.ll-phoneme-table td {
+  border-bottom: 1px solid #e2ecec;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.ll-phoneme-table th {
+  color: #2a4d50;
+  font-weight: 700;
+  background: #f2f8f8;
+}
+
+.ll-wave {
+  height: 64px;
+  border-radius: 8px;
+  border: 1px solid #c0d6d8;
+}
+
+.ll-wave-model {
+  background: repeating-linear-gradient(
+    90deg,
+    #89b9be 0,
+    #89b9be 6px,
+    #d9ebed 6px,
+    #d9ebed 12px
+  );
+}
+
+.ll-wave-user {
+  background: repeating-linear-gradient(
+    90deg,
+    #7fa8ce 0,
+    #7fa8ce 4px,
+    #d7e4f2 4px,
+    #d7e4f2 10px
+  );
+}
+
+.ll-message {
+  margin-top: 10px;
+  color: #34585d;
+}
+
+/* Language Selection Styles */
+.ll-select {
+  border: 1px solid #9eb6b8;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+  color: #132a2b;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ll-language-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.ll-language-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ll-language-select label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f4e53;
+}
+
+.ll-swap-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+}
+
+.ll-swap-button button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+@media (max-width: 860px) {
+  .ll-two-col,
+  .ll-wave-compare {
+    grid-template-columns: 1fr;
+  }
+
+  .ll-language-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ll-swap-button {
+    height: auto;
+  }
+
+  .ll-swap-button button {
+    width: 100%;
+    height: 32px;
+  }
+}
+
+/* Pronunciation Evaluation Section */
+.ll-evaluation-section {
+  background: #f0f8f9;
+  border: 1px solid #a8d4db;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.ll-evaluation-section h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #14393e;
+  font-size: 1.1em;
+}
+
+.ll-evaluation-section .ll-row {
+  margin-bottom: 12px;
+}
+
+.ll-evaluation-result {
+  background: #fff;
+  border: 1px solid #9eb6b8;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.ll-confidence {
+  font-weight: 600;
+  color: #205f64;
+  margin: 0 0 8px 0;
+}
+
+.ll-improvements {
+  margin: 10px 0;
+}
+
+.ll-improvements h5 {
+  margin: 8px 0 6px 0;
+  font-size: 0.95em;
+  color: #14393e;
+}
+
+.ll-improvements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ll-improvement {
+  background: #f6fbfb;
+  border-left: 3px solid #205f64;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.ll-improvement strong {
+  color: #14393e;
+  text-transform: capitalize;
+}
+
+.ll-improvement em {
+  display: block;
+  color: #4a7a80;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.ll-improvement.ll-focus-articulation {
+  border-left-color: #d97d06;
+}
+
+.ll-improvement.ll-focus-timing {
+  border-left-color: #0891b2;
+}
+
+.ll-improvement.ll-focus-stress {
+  border-left-color: #7c3aed;
+}
+
+.ll-improvement.ll-focus-intonation {
+  border-left-color: #059669;
+}
+
+.ll-improvement.ll-focus-other {
+  border-left-color: #6b7280;
+}
+
+.ll-encouragement {
+  background: #d1f9f3;
+  border: 1px solid #5ee7df;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  color: #0d6e66;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Audio Playback Section */
+.ll-audio-playback {
+  background: #f6fbfb;
+  border: 1px solid #c7dbdd;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.ll-audio-playback h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1em;
+  color: #14393e;
+}
+
+.ll-audio-playback p {
+  margin: 8px 0 4px 0;
+  font-size: 0.9em;
+  color: #2f5e66;
+  font-weight: 500;
+}
+
+.ll-audio-playback div {
+  margin-bottom: 10px;
+}
+
+.ll-audio-playback audio {
+  width: 100%;
+  height: 32px;
+}

@@ -1,0 +1,28 @@
+{
+  "fastPipelineTerm": [
+    "Generate a vocabulary-learning entry for {{TERM}}.",
+    "Return English, German, nuance, 1 to 5 examples, and a category suggestion.",
+    "Use a {{CHARACTER_STYLE_LABEL}} {{CHARACTER_GENDER_LABEL}} voice at {{DERE_PERCENT}} intensity."
+  ],
+  "accentAnalysis": [
+    "Accent analysis is not available in the local Gemma/Ollama configuration."
+  ],
+  "reasoningAnswer": [
+    "Answer the following language-learning question in {{TARGET_LANG}}.",
+    "Use a {{CHARACTER_STYLE_LABEL}} {{CHARACTER_GENDER_LABEL}} voice at {{DERE_PERCENT}} intensity.",
+    "Question: {{USER_PROMPT}}"
+  ],
+  "pronunciationEvaluation": [
+    "You are a language pronunciation coach. Analyze the user's pronunciation and provide specific improvement points.",
+    "Target Word/Phrase: {{TARGET_PHRASE}}",
+    "Target Language: {{TARGET_LANG}}",
+    "Whisper transcription of the user recording: {{TRANSCRIPT}}",
+    "User's MFCC acoustic similarity: {{MFCC_ACCURACY}}%",
+    "User's Waveform Similarity: {{WAVEFORM_SIMILARITY}}%",
+    "Timing Difference: {{TIMING_INFO}}",
+    "",
+    "Provide 3-5 specific, actionable improvement points in {{TARGET_LANG}}.",
+    "Format: bullet points with clear explanation for each point.",
+    "Focus on: articulation, timing, stress, and intonation."
+  ]
+}

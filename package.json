@@ -1,0 +1,131 @@
+{
+  "name": "language-learning",
+  "version": "0.1.0",
+  "description": "Electron + React personal money management app",
+  "author": "Frost",
+  "main": "Desktop/electron/main.js",
+  "type": "module",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "electron:rebuild": "electron-rebuild -f -w better-sqlite3",
+    "react:start": "vite",
+    "react:build": "vite build",
+    "start": "electron .",
+    "dev": "concurrently \"npm run react:start\" \"wait-on tcp:5173 && electron .\"",
+    "setup": "node scripts/setup-complete.js",
+    "setup:ollama": "node scripts/setup-ollama.js",
+    "dev:env": "node scripts/dev-env.js",
+    "dev:server": "node server/src/app.js",
+    "dev:frontend": "vite",
+    "generate:icons": "node ./scripts/generate-icons.js",
+    "kill-running": "node ./scripts/kill-running.js",
+    "predist:win": "npm run generate:icons && npm run kill-running",
+    "dist:win": "npm run react:build && electron-builder --publish never --win nsis --x64",
+    "predist:win32": "npm run generate:icons && npm run kill-running",
+    "dist:win32": "npm run react:build && electron-builder --publish never --win nsis --ia32",
+    "predist:win:all": "npm run generate:icons && npm run kill-running",
+    "dist:win:all": "npm run react:build && electron-builder --publish never --win nsis --x64 --ia32",
+    "android:build": "npm run react:build && npx cap copy android && npx cap open android",
+    "android:sync": "npm run react:build && npx cap sync android",
+    "server:dev": "node server/src/app.js",
+    "server:test": "vitest run server/tests"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor-community/sqlite": "^8.1.0",
+    "@capacitor/android": "^8.3.3",
+    "@capacitor/core": "^8.3.3",
+    "@huggingface/transformers": "^4.2.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "better-sqlite3": "^12.9.0",
+    "chart.js": "^4.5.1",
+    "express": "^4.21.2",
+    "meyda": "^5.6.3",
+    "mongodb": "^6.21.0",
+    "pg": "^8.16.3",
+    "pino": "^9.3.2",
+    "pino-http": "^10.3.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.3",
+    "@electron/rebuild": "^4.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.8.1",
+    "supertest": "^7.1.3",
+    "tar": ">=7.5.16",
+    "typescript": "^6.0.3",
+    "vite": "^6.4.2",
+    "vitest": "^2.1.9",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "com.frost.houseledger",
+    "productName": "HouseLedger",
+    "icon": "build/icons/icon",
+    "files": [
+      "Desktop/electron/**/*",
+      "dist/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "executableName": "HouseLedger",
+      "artifactName": "HouseLedger-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "executableName": "HouseLedger",
+      "artifactName": "HouseLedger-mac-${version}-${arch}.${ext}",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "guid": "com.frost.houseledger",
+      "deleteAppDataOnUninstall": false,
+      "createStartMenuShortcut": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "HouseLedger"
+    },
+    "extraMetadata": {
+      "main": "Desktop/electron/main.js"
+    }
+  }
+}
