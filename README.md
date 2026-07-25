@@ -62,11 +62,11 @@ npm run dist:win         # Windows build
 ## Documentation
 
 ### English Documentation
-- [SETUP.md](doc/SETUP.md) - Detailed setup guide for all platforms
-- [TROUBLESHOOTING.md](doc/TROUBLESHOOTING.md) - Common issues and solutions
-- [ARCHITECTURE.md](doc/ARCHITECTURE.md) - System design and project structure
-- [DEVELOPMENT.md](doc/DEVELOPMENT.md) - Development guide and tips
-- [DEPLOYMENT.md](doc/DEPLOYMENT.md) - Building and deployment guides
+- [SETUP](doc/SETUP.md) - Detailed setup guide for all platforms
+- [TROUBLESHOOTING](doc/TROUBLESHOOTING.md) - Common issues and solutions
+- [ARCHITECTURE](doc/ARCHITECTURE.md) - System design and project structure
+- [DEVELOPMENT](doc/DEVELOPMENT.md) - Development guide and tips
+- [DEPLOYMENT](doc/DEPLOYMENT.md) - Building and deployment guides
 
 ### 日本語ドキュメント
 - [セットアップガイド](doc_jp/SETUP_JP.md) - 詳細セットアップガイド
