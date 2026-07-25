@@ -69,14 +69,14 @@ npm run dist:win         # Windows build
 - [DEPLOYMENT.md](doc/DEPLOYMENT.md) - Building and deployment guides
 
 ### 日本語ドキュメント
-- [doc_jp/SETUP_JP.md](doc_jp/SETUP_JP.md) - 詳細セットアップガイド
-- [doc_jp/TROUBLESHOOTING_JP.md](doc_jp/TROUBLESHOOTING_JP.md) - よくある問題と解決法
-- [doc_jp/ARCHITECTURE_JP.md](doc_jp/ARCHITECTURE_JP.md) - システム設計
-- [doc_jp/DEVELOPMENT_JP.md](doc_jp/DEVELOPMENT_JP.md) - 開発ガイド
-- [doc_jp/DEPLOYMENT_JP.md](doc_jp/DEPLOYMENT_JP.md) - ビルド・デプロイメント
+- [セットアップガイド](doc_jp/SETUP_JP.md) - 詳細セットアップガイド
+- [よくある問題と解決法](doc_jp/TROUBLESHOOTING_JP.md) - よくある問題と解決法
+- [システム設計](doc_jp/ARCHITECTURE_JP.md) - システム設計
+- [開発ガイド](doc_jp/DEVELOPMENT_JP.md) - 開発ガイド
+- [ビルド・デプロイメント](doc_jp/DEPLOYMENT_JP.md) - ビルド・デプロイメント
 
 ### 日本語版 README
-- [doc_jp/README_JP.md](doc_jp/README_JP.md) - 日本語による概要説明
+- [日本語版 README](doc_jp/README_JP.md) - 日本語による概要説明
 
 ## Tech Stack
 
