@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { languageApi } from "../../lib/apiClient.js";
+import { languageApi, setupApi } from "../../lib/apiClient.js";
 
 const LOCALE_OPTIONS = [
   { value: "en", label: "English" },
@@ -20,9 +20,18 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
   const [newLanguageName, setNewLanguageName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // AI Setup Status state
+  const [setupStatus, setSetupStatus] = useState(null);
+  const [setupLoading, setSetupLoading] = useState(false);
+  const [setupMessage, setSetupMessage] = useState("");
 
   useEffect(() => {
     loadLanguages();
+    checkSetupStatus();
+    // Auto-refresh setup status every 5 seconds
+    const interval = setInterval(checkSetupStatus, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   async function loadLanguages() {
@@ -90,10 +99,100 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
     }
   }
 
+  async function checkSetupStatus() {
+    try {
+      const status = await setupApi.getStatus();
+      setSetupStatus(status);
+    } catch (error) {
+      setSetupStatus({
+        ollama: { installed: false, running: false },
+        models: { embeddinggemma: false },
+        ready: false
+      });
+    }
+  }
+
+  async function onInitializeModels() {
+    setSetupLoading(true);
+    setSetupMessage("");
+    try {
+      const result = await setupApi.initModels();
+      setSetupMessage("✅ AI models initialized successfully!");
+      await new Promise(r => setTimeout(r, 2000));
+      await checkSetupStatus();
+    } catch (error) {
+      setSetupMessage(`❌ ${error.message}`);
+    } finally {
+      setSetupLoading(false);
+    }
+  }
+
+  function getStatusIcon(ready) {
+    if (!ready) return "🔴";
+    return "🟢";
+  }
+
+  function getStatusText(status) {
+    if (!status.ollama.installed) {
+      return "Ollama not installed";
+    }
+    if (!status.ollama.running) {
+      return "Ollama not running - please start Ollama";
+    }
+    if (!status.models.embeddinggemma) {
+      return "Downloading AI models...";
+    }
+    return "Ready to learn!";
+  }
+
   return (
     <section className="ll-card">
       <h3>{t.llSettingsTitle || "Settings"}</h3>
       <p className="ll-message">{t.llSettingsSubtext || "Configure language and display settings."}</p>
+
+      <hr style={{ margin: "12px 0", borderColor: "#c7dbdd" }} />
+
+      {/* AI Setup Status Section */}
+      <h4 style={{ marginTop: "16px", marginBottom: "12px" }}>🤖 AI Setup Status</h4>
+      {setupStatus && (
+        <div className="ll-card" style={{ background: setupStatus.ready ? "#e8f5e9" : "#fff3e0", marginBottom: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "24px" }}>{getStatusIcon(setupStatus.ready)}</span>
+              <div>
+                <div style={{ fontWeight: "bold", fontSize: "14px" }}>{getStatusText(setupStatus)}</div>
+                {setupStatus.ollama.installed && (
+                  <div style={{ fontSize: "12px", color: "#666" }}>Ollama v{setupStatus.ollama.version}</div>
+                )}
+              </div>
+            </div>
+            {!setupStatus.ready && (
+              <button
+                onClick={onInitializeModels}
+                disabled={setupLoading || !setupStatus.ollama.running}
+                className="ll-button ll-button-primary"
+                style={{ whiteSpace: "nowrap" }}
+              >
+                {setupLoading ? "Initializing..." : "Initialize AI Models"}
+              </button>
+            )}
+          </div>
+          
+          {setupMessage && (
+            <div style={{ fontSize: "12px", marginTop: "8px", padding: "8px", background: "#fff", borderRadius: "4px" }}>
+              {setupMessage}
+            </div>
+          )}
+          
+          <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
+            <div>✓ Ollama: {setupStatus.ollama.installed ? "Installed" : "Not installed"}</div>
+            <div>✓ Running: {setupStatus.ollama.running ? "Yes" : "No"}</div>
+            <div>✓ Models: {setupStatus.models.embeddinggemma ? "Ready" : "Not downloaded"}</div>
+          </div>
+        </div>
+      )}
+
+      <hr style={{ margin: "12px 0", borderColor: "#c7dbdd" }} />
 
       <label className="ll-settings-label">
         <span>{t.llLanguageLabel || "Language"}</span>

@@ -1,6 +1,7 @@
 import express from "express";
 import { assertRequiredConfig, config } from "./config.js";
 import { languageRoutes } from "./routes/languageRoutes.js";
+import { setupRoutes } from "./routes/setupRoutes.js";
 import { AppError, toHttpError } from "./errors.js";
 import { httpLogger, logger } from "./logger.js";
 
@@ -26,6 +27,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api", languageRoutes);
+app.use("/api/setup", setupRoutes);
 
 app.use((req, _res, next) => {
   next(new AppError(`Route not found: ${req.method} ${req.originalUrl}`, { status: 404, code: "NOT_FOUND" }));

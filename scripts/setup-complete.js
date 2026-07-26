@@ -64,13 +64,14 @@ async function installOllama() {
 async function tryPowerShellInstall() {
   try {
     log("gray", "  Method 1: PowerShell install script...");
+    log("gray", "  Running: curl -fsSL https://ollama.com/install.ps1 | iex");
     execSync(
-      'powershell -ExecutionPolicy Bypass -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = \'SilentlyContinue\'; irm https://ollama.com/install.ps1 | iex}"',
+      `powershell -Command "& {$script = Invoke-RestMethod -Uri 'https://ollama.com/install.ps1'; $script | Invoke-Expression}"`,
       { stdio: "inherit", timeout: 120000 }
     );
     return true;
   } catch (error) {
-    log("yellow", `  ⚠ PowerShell method failed: ${error.message}`);
+    log("yellow", `  ⚠ Curl method failed: ${error.message}`);
     return false;
   }
 }
@@ -101,11 +102,10 @@ async function installOllamaWindows() {
   try {
     log("yellow", "  Installing Ollama for Windows...");
     
-    // Try multiple installation methods
+    // Try multiple installation methods (skip Chocolatey due to lock file issues)
     const methods = [
-      { name: "PowerShell", fn: tryPowerShellInstall },
       { name: "Winget", fn: tryWingetInstall },
-      { name: "Chocolatey", fn: tryChocolateyInstall }
+      { name: "PowerShell", fn: tryPowerShellInstall }
     ];
     
     let installed = false;
@@ -125,12 +125,12 @@ async function installOllamaWindows() {
       log("yellow", "\n⚠ All automatic installation methods failed");
       log("yellow", "  Retrying with elevated privileges...\n");
       
-      // Try PowerShell again with explicit admin request
+      // Try PowerShell with admin request as last resort
       try {
-        log("gray", "  Attempting to request administrative elevation...");
+        log("gray", "  Attempting PowerShell with administrative elevation...");
         execSync(
-          'powershell -Command "Start-Process powershell -Verb RunAs -ArgumentList \'-ExecutionPolicy Bypass -Command \\\"irm https://ollama.com/install.ps1 | iex\\\"\'"',
-          { stdio: "inherit", timeout: 30000 }
+          `powershell -Command "Start-Process powershell -Verb RunAs -Wait -NoNewWindow -ArgumentList '-NoExit -Command & {Invoke-RestMethod -Uri \\'https://ollama.com/install.ps1\\' | Invoke-Expression}'"`,
+          { stdio: "inherit", timeout: 60000 }
         );
         installed = true;
       } catch {
@@ -147,7 +147,7 @@ async function installOllamaWindows() {
       log("green", `✓ Ollama installed successfully: ${version.trim()}`);
       return true;
     } catch {
-      log("yellow", "⚠ Ollama not verified yet");
+      log("yellow", "⚠ Ollama installation may still be in progress");
       log("yellow", "  Please restart your terminal and run: npm run setup again");
       log("yellow", "\n  If installation still fails, download manually:");
       log("yellow", "  https://ollama.com/download/windows");
@@ -168,7 +168,7 @@ async function installOllamamacOS() {
     
     execSync(
       'curl -fsSL https://ollama.com/install.sh | sh',
-      { stdio: "inherit", shell: "/bin/bash" }
+      { stdio: "inherit", shell: "/bin/bash", timeout: 120000 }
     );
     
     // Wait for installation
@@ -197,7 +197,7 @@ async function installOllamaLinux() {
     
     execSync(
       'curl -fsSL https://ollama.com/install.sh | sh',
-      { stdio: "inherit", shell: "/bin/bash" }
+      { stdio: "inherit", shell: "/bin/bash", timeout: 120000 }
     );
     
     // Wait for installation

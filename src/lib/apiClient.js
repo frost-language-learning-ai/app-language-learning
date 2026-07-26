@@ -146,3 +146,31 @@ export const languageApi = {
     });
   }
 };
+
+export const setupApi = {
+  getStatus() {
+    return call("/setup/status", {
+      method: "GET",
+      timeoutMs: 10000
+    });
+  },
+  checkOllama() {
+    return call("/setup/check-ollama", {
+      method: "POST",
+      timeoutMs: 5000
+    });
+  },
+  initModels() {
+    return call("/setup/init-models", {
+      method: "POST",
+      timeoutMs: 300000 // 5 minutes for model download
+    });
+  },
+  pullModel(modelName) {
+    return call("/setup/pull-model", {
+      method: "POST",
+      body: JSON.stringify({ modelName }),
+      timeoutMs: 300000
+    });
+  }
+};
