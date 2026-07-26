@@ -12,8 +12,6 @@
     "react:build": "vite build",
     "start": "electron .",
     "dev": "concurrently \"npm run react:start\" \"wait-on tcp:5173 && electron .\"",
-    "dev:server": "node server/src/app.js",
-    "dev:frontend": "vite",
     "generate:icons": "node ./scripts/generate-icons.js",
     "kill-running": "node ./scripts/kill-running.js",
     "predist:win": "npm run generate:icons && npm run kill-running",

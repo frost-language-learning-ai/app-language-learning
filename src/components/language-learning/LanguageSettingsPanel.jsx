@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { languageApi, setupApi } from "../../lib/apiClient.js";
+import { languageApi } from "../../lib/apiClient.js";
 
 const LOCALE_OPTIONS = [
   { value: "en", label: "English" },
@@ -20,18 +20,9 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
   const [newLanguageName, setNewLanguageName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  // AI Setup Status state
-  const [setupStatus, setSetupStatus] = useState(null);
-  const [setupLoading, setSetupLoading] = useState(false);
-  const [setupMessage, setSetupMessage] = useState("");
 
   useEffect(() => {
     loadLanguages();
-    checkSetupStatus();
-    // Auto-refresh setup status every 5 seconds
-    const interval = setInterval(checkSetupStatus, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   async function loadLanguages() {
@@ -99,101 +90,29 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
     }
   }
 
-  async function checkSetupStatus() {
-    try {
-      const status = await setupApi.getStatus();
-      setSetupStatus(status);
-    } catch (error) {
-      setSetupStatus({
-        ollama: { installed: false, running: false },
-        models: { embeddinggemma: false },
-        ready: false
-      });
-    }
-  }
-
-  async function onInitializeModels() {
-    setSetupLoading(true);
-    setSetupMessage("");
-    try {
-      const result = await setupApi.initModels();
-      setSetupMessage("✅ AI models initialized successfully!");
-      await new Promise(r => setTimeout(r, 2000));
-      await checkSetupStatus();
-    } catch (error) {
-      setSetupMessage(`❌ ${error.message}`);
-    } finally {
-      setSetupLoading(false);
-    }
-  }
-
-  function getStatusIcon(ready) {
-    if (!ready) return "🔴";
-    return "🟢";
-  }
-
-  function getStatusText(status) {
-    if (!status.ollama.installed) {
-      return "Ollama not installed";
-    }
-    if (!status.ollama.running) {
-      return "Ollama not running - please start Ollama";
-    }
-    if (!status.models.embeddinggemma) {
-      return "Downloading AI models...";
-    }
-    return "Ready to learn!";
-  }
-
   return (
     <section className="ll-card">
       <h3>{t.llSettingsTitle || "Settings"}</h3>
       <p className="ll-message">{t.llSettingsSubtext || "Configure language and display settings."}</p>
 
-      <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
-
-      {/* AI Setup Status Section */}
-      <h4 style={{ marginTop: "16px", marginBottom: "12px" }}>🤖 AI Setup Status</h4>
-      {setupStatus && (
-        <div className="ll-card" style={{ background: setupStatus.ready ? "#193327" : "#302a1c", marginBottom: "16px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "24px" }}>{getStatusIcon(setupStatus.ready)}</span>
-              <div>
-                <div style={{ fontWeight: "bold", fontSize: "14px" }}>{getStatusText(setupStatus)}</div>
-                {setupStatus.ollama.installed && (
-                  <div style={{ fontSize: "12px", color: "var(--ll-text-muted)" }}>Ollama v{setupStatus.ollama.version}</div>
-                )}
-              </div>
-            </div>
-            {!setupStatus.ready && (
-              <button
-                onClick={onInitializeModels}
-                disabled={setupLoading || !setupStatus.ollama.running}
-                className="ll-button ll-button-primary"
-                style={{ whiteSpace: "nowrap" }}
-              >
-                {setupLoading ? "Initializing..." : "Initialize AI Models"}
-              </button>
-            )}
-          </div>
-          
-          {setupMessage && (
-            <div style={{ fontSize: "12px", marginTop: "8px", padding: "8px", background: "var(--ll-surface-muted)", borderRadius: "4px" }}>
-              {setupMessage}
-            </div>
-          )}
-          
-          <div style={{ fontSize: "12px", color: "var(--ll-text-muted)", marginTop: "12px" }}>
-            <div>✓ Ollama: {setupStatus.ollama.installed ? "Installed" : "Not installed"}</div>
-            <div>✓ Running: {setupStatus.ollama.running ? "Yes" : "No"}</div>
-            <div>✓ Models: {setupStatus.models.embeddinggemma ? "Ready" : "Not downloaded"}</div>
-          </div>
-        </div>
+      {/* Display any messages */}
+      {message && (
+        <p
+          style={{
+            marginTop: "12px",
+            padding: "8px",
+            borderRadius: "6px",
+            background: message.includes("Failed") ? "#3c2025" : "#193327",
+            color: "var(--ll-text)"
+          }}
+        >
+          {message}
+        </p>
       )}
 
       <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
 
+      {/* App Display Language Selection Section */}
       <label className="ll-settings-label">
         <span>{t.llLanguageLabel || "Language"}</span>
         <select
@@ -209,10 +128,68 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
         </select>
       </label>
 
+      <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
+
       <hr style={{ margin: "20px 0", borderColor: "var(--ll-border)" }} />
 
+      {/* Available Language Management Section */}
       <h4 style={{ marginTop: "20px", marginBottom: "12px" }}>Language Management</h4>
-      
+
+      <div className="ll-card" style={{ background: "var(--ll-surface-muted)" }}>
+        <h5 style={{ marginBottom: "12px" }}>Available Languages</h5>
+        {languages.length === 0 ? (
+          <p style={{ color: "var(--ll-text-muted)" }}>No languages available</p>
+        ) : (
+          <div className="ll-languages-table-wrapper">
+            <table className="ll-languages-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Language Name</th>
+                  <th>Visible</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {languages.map((lang) => (
+                  <tr key={lang.code}>
+                    <td style={{ fontFamily: "monospace" }}>{lang.code}</td>
+                    <td>{lang.name}</td>
+                    <td style={{ textAlign: "center" }}>
+                      <span style={{ color: lang.visible === false ? "var(--ll-text-muted)" : "var(--ll-accent)" }}>
+                        {lang.visible === false ? "○ Hidden" : "✓ Visible"}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => onToggleVisibility(lang.code, lang.visible)}
+                        disabled={loading}
+                        className="ll-button"
+                        style={{ padding: "4px 8px", marginRight: "4px" }}
+                      >
+                        {lang.visible === false ? "Show" : "Hide"}
+                      </button>
+                      <button
+                        onClick={() => onDeleteLanguage(lang.code)}
+                        disabled={loading}
+                        className="ll-button"
+                        style={{
+                          padding: "4px 8px",
+                          color: "var(--ll-danger)",
+                          borderColor: "var(--ll-danger)"
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       <div className="ll-card" style={{ background: "var(--ll-surface-muted)", marginBottom: "12px" }}>
         <h5 style={{ marginBottom: "12px" }}>Add New Language</h5>
         <div className="ll-row">
@@ -241,72 +218,6 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
           </button>
         </div>
       </div>
-
-      <div className="ll-card" style={{ background: "var(--ll-surface-muted)" }}>
-        <h5 style={{ marginBottom: "12px" }}>Available Languages</h5>
-        {languages.length === 0 ? (
-          <p style={{ color: "var(--ll-text-muted)" }}>No languages available</p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {languages.map((lang) => (
-              <div
-                key={lang.code}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "8px",
-                  border: "1px solid var(--ll-border)",
-                  borderRadius: "6px",
-                  background: lang.visible === false ? "#141e25" : "#18232b"
-                }}
-              >
-                <div>
-                  <strong>{lang.code}</strong> - {lang.name}
-                  {lang.visible === false && <span style={{ color: "var(--ll-text-muted)", fontSize: "12px", marginLeft: "8px" }}>(hidden)</span>}
-                </div>
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button
-                    onClick={() => onToggleVisibility(lang.code, lang.visible)}
-                    disabled={loading}
-                    className="ll-button"
-                    style={{ fontSize: "12px", padding: "4px 8px" }}
-                  >
-                    {lang.visible === false ? "Show" : "Hide"}
-                  </button>
-                  <button
-                    onClick={() => onDeleteLanguage(lang.code)}
-                    disabled={loading}
-                    className="ll-button"
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 8px",
-                      color: "var(--ll-danger)",
-                      borderColor: "var(--ll-danger)"
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {message && (
-        <p
-          style={{
-            marginTop: "12px",
-            padding: "8px",
-            borderRadius: "6px",
-            background: message.includes("Failed") ? "#3c2025" : "#193327",
-            color: "var(--ll-text)"
-          }}
-        >
-          {message}
-        </p>
-      )}
     </section>
   );
 }

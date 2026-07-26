@@ -46,6 +46,7 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  process.env.LANGUAGE_SETTINGS_FILE = path.join(app.getPath("userData"), "languages.json");
   await ensureApiServer();
   createWindow();
 });

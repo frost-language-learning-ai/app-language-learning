@@ -1,5 +1,5 @@
 import express from "express";
-import { readFileSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { pool, withTransaction } from "../db.js";
@@ -21,8 +21,34 @@ import { transcribePcmAudio } from "../services/whisperClient.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const languagesFilePath = join(__dirname, "../prompts/languages.json");
-let languagesData = JSON.parse(readFileSync(languagesFilePath, "utf-8"));
+const bundledLanguagesFilePath = join(__dirname, "../prompts/languages.json");
+const languagesFilePath = process.env.LANGUAGE_SETTINGS_FILE || bundledLanguagesFilePath;
+
+function ensureLanguageSettingsFile() {
+  if (languagesFilePath === bundledLanguagesFilePath || existsSync(languagesFilePath)) return;
+  mkdirSync(dirname(languagesFilePath), { recursive: true });
+  copyFileSync(bundledLanguagesFilePath, languagesFilePath);
+}
+
+function loadLanguages() {
+  ensureLanguageSettingsFile();
+  return JSON.parse(readFileSync(languagesFilePath, "utf-8"));
+}
+
+function saveLanguages(data) {
+  try {
+    writeFileSync(languagesFilePath, JSON.stringify(data), "utf-8");
+  } catch (error) {
+    throw new AppError(`Could not save language visibility: ${error.message}`, {
+      status: 500,
+      code: "LANGUAGE_SETTINGS_SAVE_FAILED",
+      expose: true,
+      cause: error
+    });
+  }
+}
+
+let languagesData = loadLanguages();
 
 export const languageRoutes = express.Router();
 
@@ -35,60 +61,30 @@ async function assertTermExists(termId) {
 
 languageRoutes.get("/languages", asyncHandler(async (req, res) => {
   const includeHidden = req.query.includeHidden === "true";
+  languagesData = loadLanguages();
   const languages = includeHidden 
     ? languagesData.languages 
     : languagesData.languages.filter(lang => lang.visible !== false);
   res.json({ ok: true, languages });
 }));
 
-languageRoutes.post("/languages", asyncHandler(async (req, res) => {
-  const { code, name, nativeName, visible = true } = req.body;
-  if (!code || !name) {
-    throw new AppError("Language code and name are required", { status: 400, code: "INVALID_INPUT" });
-  }
-
-  const newLanguage = { code, name, nativeName: nativeName || name, visible };
-  
-  // Check if language already exists
-  const exists = languagesData.languages.some(l => l.code === code);
-  if (!exists) {
-    languagesData.languages.push(newLanguage);
-    writeFileSync(languagesFilePath, JSON.stringify(languagesData), "utf-8");
-  }
-
-  res.status(201).json({ ok: true, language: newLanguage });
-}));
-
-languageRoutes.delete("/languages/:code", asyncHandler(async (req, res) => {
-  const { code } = req.params;
-  const initialLength = languagesData.languages.length;
-  
-  languagesData.languages = languagesData.languages.filter(l => l.code !== code);
-  
-  if (languagesData.languages.length === initialLength) {
-    throw new AppError("Language not found", { status: 404, code: "LANGUAGE_NOT_FOUND" });
-  }
-  
-  writeFileSync(languagesFilePath, JSON.stringify(languagesData), "utf-8");
-  res.json({ ok: true, message: `Language ${code} deleted successfully` });
-}));
-
 languageRoutes.patch("/languages/:code", asyncHandler(async (req, res) => {
   const { code } = req.params;
   const { visible } = req.body;
   
-  // Reload languages data to ensure fresh state
-  languagesData = JSON.parse(readFileSync(languagesFilePath, "utf-8"));
+  if (typeof visible !== "boolean") {
+    throw new AppError("visible must be a boolean", { status: 400, code: "INVALID_INPUT" });
+  }
+
+  languagesData = loadLanguages();
   
   const language = languagesData.languages.find(l => l.code === code);
   if (!language) {
     throw new AppError("Language not found", { status: 404, code: "LANGUAGE_NOT_FOUND" });
   }
   
-  if (visible !== undefined) {
-    language.visible = visible;
-    writeFileSync(languagesFilePath, JSON.stringify(languagesData), "utf-8");
-  }
+  language.visible = visible;
+  saveLanguages(languagesData);
   
   res.json({ ok: true, language });
 }));

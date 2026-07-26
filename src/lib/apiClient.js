@@ -128,17 +128,6 @@ export const languageApi = {
       method: "GET"
     });
   },
-  addLanguage(language) {
-    return call("/languages", {
-      method: "POST",
-      body: JSON.stringify(language)
-    });
-  },
-  deleteLanguage(code) {
-    return call(`/languages/${code}`, {
-      method: "DELETE"
-    });
-  },
   updateLanguageVisibility(code, visible) {
     return call(`/languages/${code}`, {
       method: "PATCH",

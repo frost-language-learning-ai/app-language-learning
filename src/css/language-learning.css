@@ -450,6 +450,63 @@
   color: var(--ll-text-muted);
 }
 
+.ll-languages-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--ll-border);
+  border-radius: 8px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.ll-languages-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ll-languages-table th {
+  background: var(--ll-surface-raised);
+  color: var(--ll-text);
+  font-weight: 600;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--ll-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ll-languages-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ll-border);
+  vertical-align: middle;
+}
+
+.ll-languages-table td:first-child {
+  min-width: 60px;
+}
+
+.ll-languages-table td:nth-child(2) {
+  min-width: 140px;
+}
+
+.ll-languages-table td:nth-child(3) {
+  min-width: 100px;
+}
+
+.ll-languages-table td:nth-child(4) {
+  min-width: 160px;
+  white-space: nowrap;
+}
+
+.ll-languages-table tbody tr:hover {
+  background: rgba(66, 165, 160, 0.08);
+}
+
+.ll-languages-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .ll-swap-button {
   display: flex;
   align-items: center;
