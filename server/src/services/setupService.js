@@ -1,6 +1,10 @@
-import { execSync, exec } from "child_process";
+import { execSync, spawn } from "child_process";
 import { config } from "../config.js";
 import { AppError } from "../errors.js";
+
+const OLLAMA_STARTUP_TIMEOUT_MS = 10000;
+const OLLAMA_STATUS_POLL_INTERVAL_MS = 500;
+let modelDownload = { state: "idle", progress: 0, message: "", error: null };
 
 /**
  * Check Ollama installation and version
@@ -38,6 +42,56 @@ async function checkOllamaRunning() {
 }
 
 /**
+ * Start a locally installed Ollama service and wait for its HTTP endpoint.
+ */
+export async function startOllama() {
+  const status = await checkOllamaStatus();
+  if (!status.installed) {
+    throw new AppError("Ollama is not installed", {
+      status: 400,
+      code: "OLLAMA_NOT_INSTALLED"
+    });
+  }
+
+  if (status.running) {
+    return status;
+  }
+
+  try {
+    const child = spawn("ollama", ["serve"], {
+      detached: true,
+      stdio: "ignore",
+      windowsHide: true
+    });
+    await new Promise((resolve, reject) => {
+      child.once("spawn", resolve);
+      child.once("error", reject);
+    });
+    child.unref();
+  } catch (error) {
+    throw new AppError(`Failed to start Ollama: ${error.message}`, {
+      status: 503,
+      code: "OLLAMA_START_FAILED",
+      cause: error,
+      expose: true
+    });
+  }
+
+  const deadline = Date.now() + OLLAMA_STARTUP_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    if (await checkOllamaRunning()) {
+      return checkOllamaStatus();
+    }
+    await new Promise((resolve) => setTimeout(resolve, OLLAMA_STATUS_POLL_INTERVAL_MS));
+  }
+
+  throw new AppError("Ollama did not start within 10 seconds", {
+    status: 503,
+    code: "OLLAMA_START_TIMEOUT"
+  });
+}
+
+/**
  * Get installed models
  */
 export async function getInstalledModels() {
@@ -70,49 +124,6 @@ export async function getInstalledModels() {
 }
 
 /**
- * Pull a model from Ollama (streaming)
- * Returns a function that can be called to get the next line of output
- */
-export async function* pullModelStream(modelName) {
-  return new Promise((resolve, reject) => {
-    const process = exec(`ollama pull ${modelName}`, { maxBuffer: 10 * 1024 * 1024 });
-    
-    let output = "";
-    process.stdout.on("data", (data) => {
-      output += data.toString();
-      const lines = output.split("\n");
-      // Keep last incomplete line
-      output = lines[lines.length - 1];
-      // Yield all complete lines
-      for (let i = 0; i < lines.length - 1; i++) {
-        if (lines[i].trim()) {
-          resolve({ value: lines[i], done: false });
-        }
-      }
-    });
-    
-    process.stderr.on("data", (data) => {
-      reject(new AppError(`Model pull error: ${data}`, {
-        status: 500,
-        code: "MODEL_PULL_FAILED"
-      }));
-    });
-    
-    process.on("close", (code) => {
-      if (code === 0) {
-        if (output.trim()) resolve({ value: output, done: false });
-        resolve({ done: true });
-      } else {
-        reject(new AppError(`Model pull failed with exit code ${code}`, {
-          status: 500,
-          code: "MODEL_PULL_FAILED"
-        }));
-      }
-    });
-  });
-}
-
-/**
  * Pull a model synchronously (blocking)
  */
 export async function pullModelSync(modelName) {
@@ -132,6 +143,56 @@ export async function pullModelSync(modelName) {
       cause: error
     });
   }
+}
+
+export async function startModelDownload() {
+  const status = await checkOllamaStatus();
+  if (!status.installed || !status.running) {
+    throw new AppError("Start Ollama before downloading AI models", {
+      status: 400,
+      code: "OLLAMA_NOT_RUNNING"
+    });
+  }
+
+  const models = await getInstalledModels();
+  if (models.embeddinggemma) {
+    modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null };
+    return modelDownload;
+  }
+
+  if (modelDownload.state === "running") {
+    return modelDownload;
+  }
+
+  modelDownload = { state: "running", progress: 0, message: "Preparing download...", error: null };
+  const child = spawn("ollama", ["pull", "embeddinggemma"], { windowsHide: true });
+  let output = "";
+
+  const updateProgress = (chunk) => {
+    output += chunk.toString();
+    const percentMatches = [...output.matchAll(/\b(\d{1,3})%/g)];
+    const latest = percentMatches.at(-1);
+    if (latest) modelDownload.progress = Math.min(99, Number(latest[1]));
+    const lastLine = output.split(/\r?\n|\r/).filter(Boolean).at(-1);
+    if (lastLine) modelDownload.message = lastLine.replace(/\x1b\[[0-9;]*m/g, "").trim();
+  };
+
+  child.stdout.on("data", updateProgress);
+  child.stderr.on("data", updateProgress);
+  child.once("error", (error) => {
+    modelDownload = { state: "failed", progress: 0, message: "Download could not start.", error: error.message };
+  });
+  child.once("close", (code) => {
+    modelDownload = code === 0
+      ? { state: "completed", progress: 100, message: "AI models are ready.", error: null }
+      : { state: "failed", progress: modelDownload.progress, message: "Download failed.", error: output.trim() || `Ollama exited with code ${code}` };
+  });
+
+  return modelDownload;
+}
+
+export function getModelDownloadStatus() {
+  return modelDownload;
 }
 
 /**

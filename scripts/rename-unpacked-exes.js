@@ -9,13 +9,13 @@ const targets = [
 
 targets.forEach(({ dir, arch }) => {
   try {
-    const src = path.join(dir, 'HouseLedger.exe');
+    const src = path.join(dir, 'LanguageLearning.exe');
     if (!fs.existsSync(dir)) {
       console.log('Directory not found:', dir);
       return;
     }
     if (fs.existsSync(src)) {
-      const dst = path.join(dir, `HouseLedger-${arch}.exe`);
+      const dst = path.join(dir, `LanguageLearning-${arch}.exe`);
       fs.renameSync(src, dst);
       console.log('Renamed', src, '->', dst);
     } else {

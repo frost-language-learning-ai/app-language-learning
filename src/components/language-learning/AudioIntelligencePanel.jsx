@@ -190,11 +190,11 @@ function drawWaveComparison(canvas, modelWave, userWave, mismatchSegments) {
   const height = canvas.height;
   ctx.clearRect(0, 0, width, height);
 
-  ctx.fillStyle = "#f6fbfb";
+  ctx.fillStyle = "#10171d";
   ctx.fillRect(0, 0, width, height);
 
   const centerY = height / 2;
-  ctx.strokeStyle = "#d1e4e5";
+  ctx.strokeStyle = "#40515d";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(0, centerY);
@@ -565,7 +565,7 @@ export default function AudioIntelligencePanel({
       <h3>{t.llAudioTitle || "Audio Intelligence"}</h3>
       
       {practiceWord && (
-        <div className="ll-preview" style={{ background: "#f0f8ff", padding: "12px", borderRadius: "6px", marginBottom: "16px" }}>
+        <div className="ll-preview" style={{ background: "var(--ll-surface-raised)", padding: "12px", borderRadius: "6px", marginBottom: "16px" }}>
           <p><strong>📚 Practice Word:</strong></p>
           <p style={{ fontSize: "1.1em", margin: "8px 0" }}>
             <span style={{ marginRight: "16px" }}><strong>{practiceWord.sourceWord}</strong> ({sourceLanguage.toUpperCase()})</span>
@@ -577,7 +577,7 @@ export default function AudioIntelligencePanel({
               <p><strong>Examples:</strong></p>
               <ul style={{ margin: "8px 0", paddingLeft: "20px" }}>
                 {practiceWord.examples.slice(0, 2).map((ex, i) => (
-                  <li key={i} style={{ fontSize: "0.9em", color: "#666" }}>{ex}</li>
+                  <li key={i} style={{ fontSize: "0.9em", color: "var(--ll-text-muted)" }}>{ex}</li>
                 ))}
               </ul>
             </>

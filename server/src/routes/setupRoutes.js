@@ -3,8 +3,11 @@ import { AppError, asyncHandler } from "../errors.js";
 import {
   checkOllamaStatus,
   getInstalledModels,
+  getModelDownloadStatus,
   pullModelSync,
-  getSetupStatus
+  getSetupStatus,
+  startModelDownload,
+  startOllama
 } from "../services/setupService.js";
 
 export const setupRoutes = express.Router();
@@ -53,57 +56,25 @@ setupRoutes.post("/check-ollama", asyncHandler(async (_req, res) => {
 }));
 
 /**
+ * POST /api/setup/start-ollama
+ * Start the locally installed Ollama service.
+ */
+setupRoutes.post("/start-ollama", asyncHandler(async (_req, res) => {
+  const status = await startOllama();
+  res.json({ ok: true, ollama: status });
+}));
+
+setupRoutes.get("/model-download-status", (_req, res) => {
+  res.json({ ok: true, download: getModelDownloadStatus() });
+});
+
+/**
  * POST /api/setup/init-models
  * Initialize required models (embeddinggemma)
  */
 setupRoutes.post("/init-models", asyncHandler(async (_req, res) => {
-  // First check Ollama
-  const ollamaStatus = await checkOllamaStatus();
-  
-  if (!ollamaStatus.installed) {
-    throw new AppError("Ollama is not installed", {
-      status: 400,
-      code: "OLLAMA_NOT_INSTALLED"
-    });
-  }
-  
-  if (!ollamaStatus.running) {
-    throw new AppError("Ollama is not running. Please start Ollama.", {
-      status: 400,
-      code: "OLLAMA_NOT_RUNNING"
-    });
-  }
-  
-  // Check current models
-  const models = await getInstalledModels();
-  const results = {
-    embeddinggemma: models.embeddinggemma,
-    messages: []
-  };
-  
-  // Pull embeddinggemma if missing
-  if (!models.embeddinggemma) {
-    try {
-      results.messages.push("Downloading embeddinggemma...");
-      await pullModelSync("embeddinggemma");
-      results.embeddinggemma = true;
-      results.messages.push("✓ embeddinggemma downloaded successfully");
-    } catch (error) {
-      results.messages.push(`✗ Failed to download embeddinggemma: ${error.message}`);
-      throw new AppError("Model initialization failed", {
-        status: 500,
-        code: "MODEL_INIT_FAILED",
-        details: { messages: results.messages, cause: error }
-      });
-    }
-  } else {
-    results.messages.push("✓ embeddinggemma already installed");
-  }
-  
-  res.json({
-    ok: true,
-    ...results
-  });
+  const download = await startModelDownload();
+  res.status(202).json({ ok: true, download });
 }));
 
 /**

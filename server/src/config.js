@@ -1,6 +1,6 @@
 export const config = {
   port: Number(process.env.LANG_SERVER_PORT || 8787),
-  databaseUrl: process.env.DATABASE_URL || "",
+  databaseUrl: process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/language_learning",
   ollamaBaseUrl: (process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434").replace(/\/$/, ""),
   ollamaModel: process.env.OLLAMA_MODEL || "gemma3:4b",
   ollamaEmbeddingModel: process.env.OLLAMA_EMBEDDING_MODEL || "embeddinggemma",

@@ -150,19 +150,19 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
       <h3>{t.llSettingsTitle || "Settings"}</h3>
       <p className="ll-message">{t.llSettingsSubtext || "Configure language and display settings."}</p>
 
-      <hr style={{ margin: "12px 0", borderColor: "#c7dbdd" }} />
+      <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
 
       {/* AI Setup Status Section */}
       <h4 style={{ marginTop: "16px", marginBottom: "12px" }}>🤖 AI Setup Status</h4>
       {setupStatus && (
-        <div className="ll-card" style={{ background: setupStatus.ready ? "#e8f5e9" : "#fff3e0", marginBottom: "16px" }}>
+        <div className="ll-card" style={{ background: setupStatus.ready ? "#193327" : "#302a1c", marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ fontSize: "24px" }}>{getStatusIcon(setupStatus.ready)}</span>
               <div>
                 <div style={{ fontWeight: "bold", fontSize: "14px" }}>{getStatusText(setupStatus)}</div>
                 {setupStatus.ollama.installed && (
-                  <div style={{ fontSize: "12px", color: "#666" }}>Ollama v{setupStatus.ollama.version}</div>
+                  <div style={{ fontSize: "12px", color: "var(--ll-text-muted)" }}>Ollama v{setupStatus.ollama.version}</div>
                 )}
               </div>
             </div>
@@ -179,12 +179,12 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
           </div>
           
           {setupMessage && (
-            <div style={{ fontSize: "12px", marginTop: "8px", padding: "8px", background: "#fff", borderRadius: "4px" }}>
+            <div style={{ fontSize: "12px", marginTop: "8px", padding: "8px", background: "var(--ll-surface-muted)", borderRadius: "4px" }}>
               {setupMessage}
             </div>
           )}
           
-          <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
+          <div style={{ fontSize: "12px", color: "var(--ll-text-muted)", marginTop: "12px" }}>
             <div>✓ Ollama: {setupStatus.ollama.installed ? "Installed" : "Not installed"}</div>
             <div>✓ Running: {setupStatus.ollama.running ? "Yes" : "No"}</div>
             <div>✓ Models: {setupStatus.models.embeddinggemma ? "Ready" : "Not downloaded"}</div>
@@ -192,7 +192,7 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
         </div>
       )}
 
-      <hr style={{ margin: "12px 0", borderColor: "#c7dbdd" }} />
+      <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
 
       <label className="ll-settings-label">
         <span>{t.llLanguageLabel || "Language"}</span>
@@ -209,11 +209,11 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
         </select>
       </label>
 
-      <hr style={{ margin: "20px 0", borderColor: "#c7dbdd" }} />
+      <hr style={{ margin: "20px 0", borderColor: "var(--ll-border)" }} />
 
       <h4 style={{ marginTop: "20px", marginBottom: "12px" }}>Language Management</h4>
       
-      <div className="ll-card" style={{ background: "#fff", marginBottom: "12px" }}>
+      <div className="ll-card" style={{ background: "var(--ll-surface-muted)", marginBottom: "12px" }}>
         <h5 style={{ marginBottom: "12px" }}>Add New Language</h5>
         <div className="ll-row">
           <input
@@ -242,10 +242,10 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
         </div>
       </div>
 
-      <div className="ll-card" style={{ background: "#fff" }}>
+      <div className="ll-card" style={{ background: "var(--ll-surface-muted)" }}>
         <h5 style={{ marginBottom: "12px" }}>Available Languages</h5>
         {languages.length === 0 ? (
-          <p style={{ color: "#666" }}>No languages available</p>
+          <p style={{ color: "var(--ll-text-muted)" }}>No languages available</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {languages.map((lang) => (
@@ -256,14 +256,14 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
                   justifyContent: "space-between",
                   alignItems: "center",
                   padding: "8px",
-                  border: "1px solid #e0e0e0",
+                  border: "1px solid var(--ll-border)",
                   borderRadius: "6px",
-                  background: lang.visible === false ? "#f5f5f5" : "#fff"
+                  background: lang.visible === false ? "#141e25" : "#18232b"
                 }}
               >
                 <div>
                   <strong>{lang.code}</strong> - {lang.name}
-                  {lang.visible === false && <span style={{ color: "#999", fontSize: "12px", marginLeft: "8px" }}>(hidden)</span>}
+                  {lang.visible === false && <span style={{ color: "var(--ll-text-muted)", fontSize: "12px", marginLeft: "8px" }}>(hidden)</span>}
                 </div>
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button
@@ -281,8 +281,8 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
                     style={{
                       fontSize: "12px",
                       padding: "4px 8px",
-                      color: "#c41e3a",
-                      borderColor: "#c41e3a"
+                      color: "var(--ll-danger)",
+                      borderColor: "var(--ll-danger)"
                     }}
                   >
                     Delete
@@ -300,8 +300,8 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
             marginTop: "12px",
             padding: "8px",
             borderRadius: "6px",
-            background: message.includes("Failed") ? "#ffe6e6" : "#e6f7e6",
-            color: message.includes("Failed") ? "#c41e3a" : "#2d5016"
+            background: message.includes("Failed") ? "#3c2025" : "#193327",
+            color: "var(--ll-text)"
           }}
         >
           {message}

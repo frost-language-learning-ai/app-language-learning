@@ -16,24 +16,18 @@ Private language learning app with local LLM. Ollama + Gemma, fully local, compl
 - Node.js 20+, npm 10+
 - PostgreSQL 15+ (with pgvector extension)
 
-### Setup (3 Steps)
+### Setup
 
 ```bash
-# 1. Complete setup (Ollama + npm + DB + models)
-npm run setup:ollama
-
-# 2. Or setup individually
-npm install                                                           # Install dependencies
-psql "postgres://postgres:postgres@localhost:5432/language_learning" -f server/migrations/001_language_learning_init.sql  # Setup DB
+npm install
 ```
+
+Install and start Ollama from the application's **AI Setup** tab. The screen checks its status and downloads the required local AI models.
 
 ### Run
 
 ```bash
-npm run dev:env          # Full startup (server + frontend)
-# Or individually:
-npm run server:dev       # Terminal 1: API server
-npm run react:start      # Terminal 2: Frontend dev server
+npm run dev              # Starts the frontend, Electron, and the local API
 ```
 
 ## Environment Variables
@@ -49,8 +43,6 @@ npm run react:start      # Terminal 2: Frontend dev server
 ## npm Scripts
 
 ```bash
-npm run setup:ollama      # Ollama + model setup
-npm run dev:env          # Full startup (Ollama + server + frontend)
 npm run dev              # Electron app development
 npm run server:dev       # API server only
 npm run react:start      # Frontend dev server only

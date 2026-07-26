@@ -72,9 +72,9 @@ npm run dist:win
 3. **出力ファイル**:
 ```
 release/
-├── HouseLedger-x.x.x.exe         # インストーラー
-├── HouseLedger-x.x.x-ia32.exe    # 32 ビット版
-└── HouseLedger-x.x.x.exe.blockmap
+├── LanguageLearning-x.x.x.exe         # インストーラー
+├── LanguageLearning-x.x.x-ia32.exe    # 32 ビット版
+└── LanguageLearning-x.x.x.exe.blockmap
 ```
 
 ### 配布
@@ -108,9 +108,9 @@ npm run dist:mac
 ### 出力ファイル
 ```
 release/
-├── HouseLedger-x.x.x.dmg        # DMG インストーラー
-├── HouseLedger-x.x.x.app        # App Bundle
-└── HouseLedger-x.x.x-arm64.dmg  # Apple Silicon 版
+├── LanguageLearning-x.x.x.dmg        # DMG インストーラー
+├── LanguageLearning-x.x.x.app        # App Bundle
+└── LanguageLearning-x.x.x-arm64.dmg  # Apple Silicon 版
 ```
 
 ## Linux ビルド

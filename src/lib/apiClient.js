@@ -154,23 +154,22 @@ export const setupApi = {
       timeoutMs: 10000
     });
   },
-  checkOllama() {
-    return call("/setup/check-ollama", {
+  startOllama() {
+    return call("/setup/start-ollama", {
       method: "POST",
-      timeoutMs: 5000
+      timeoutMs: 15000
     });
   },
   initModels() {
     return call("/setup/init-models", {
       method: "POST",
-      timeoutMs: 300000 // 5 minutes for model download
+      timeoutMs: 15000
     });
   },
-  pullModel(modelName) {
-    return call("/setup/pull-model", {
-      method: "POST",
-      body: JSON.stringify({ modelName }),
-      timeoutMs: 300000
+  getModelDownloadStatus() {
+    return call("/setup/model-download-status", {
+      method: "GET",
+      timeoutMs: 10000
     });
   }
 };

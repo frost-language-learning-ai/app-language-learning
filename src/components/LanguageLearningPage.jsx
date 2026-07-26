@@ -3,6 +3,7 @@ import FastPipelinePanel from "./language-learning/FastPipelinePanel.jsx";
 import ReasoningWorkspace from "./language-learning/ReasoningWorkspace.jsx";
 import AudioIntelligencePanel from "./language-learning/AudioIntelligencePanel.jsx";
 import LanguageSettingsPanel from "./language-learning/LanguageSettingsPanel.jsx";
+import AiSetupPanel from "./language-learning/AiSetupPanel.jsx";
 import "../css/language-learning.css";
 
 export default function LanguageLearningPage({ locale, setLocale, t }) {
@@ -130,6 +131,15 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         >
           {t.llTabSettings || "Settings"}
         </button>
+        <button
+          className={`ll-button ${activeTab === "ai-setup" ? "ll-button-primary" : ""}`}
+          onClick={() => setActiveTab("ai-setup")}
+          role="tab"
+          aria-selected={activeTab === "ai-setup"}
+          aria-controls="tab-ai-setup"
+        >
+          {t.llTabAiSetup || "AI Setup"}
+        </button>
       </div>
       {globalError && (
         <div className="ll-error-banner" role="alert" aria-live="assertive">
@@ -169,6 +179,9 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         {activeTab === "settings" && (
           <LanguageSettingsPanel t={t} locale={locale} onLocaleChange={onChangeLocale} />
         )}
+      </div>
+      <div id="tab-ai-setup" role="tabpanel" aria-labelledby="tab-ai-setup-btn" hidden={activeTab !== "ai-setup"}>
+        {activeTab === "ai-setup" && <AiSetupPanel t={t} />}
       </div>
     </main>
   );

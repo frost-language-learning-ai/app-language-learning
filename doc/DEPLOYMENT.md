@@ -72,9 +72,9 @@ npm run dist:win
 3. **Output files**:
 ```
 release/
-├── HouseLedger-x.x.x.exe         # Installer
-├── HouseLedger-x.x.x-ia32.exe    # 32-bit version
-└── HouseLedger-x.x.x.exe.blockmap
+├── LanguageLearning-x.x.x.exe         # Installer
+├── LanguageLearning-x.x.x-ia32.exe    # 32-bit version
+└── LanguageLearning-x.x.x.exe.blockmap
 ```
 
 ### Configuration
@@ -112,7 +112,7 @@ const mainWindow = new BrowserWindow({
 
 ```bash
 # Sign the executable
-signtool sign /f certificate.pfx /p password release/HouseLedger-x.x.x.exe
+signtool sign /f certificate.pfx /p password release/LanguageLearning-x.x.x.exe
 ```
 
 ## macOS Build
@@ -133,23 +133,23 @@ npm run dist:mac
 2. **Output files**:
 ```
 release/
-├── HouseLedger-x.x.x.dmg        # DMG installer
-├── HouseLedger-x.x.x.app        # App bundle
-└── HouseLedger-x.x.x-arm64.dmg  # Apple Silicon version
+├── LanguageLearning-x.x.x.dmg        # DMG installer
+├── LanguageLearning-x.x.x.app        # App bundle
+└── LanguageLearning-x.x.x-arm64.dmg  # Apple Silicon version
 ```
 
 ### Code Signing
 
 ```bash
 # Sign the application
-codesign --deep --force --verify --verbose --sign - release/HouseLedger.app
+codesign --deep --force --verify --verbose --sign - release/LanguageLearning.app
 ```
 
 ### Notarization (for App Store/Gatekeeper)
 
 ```bash
 # Submit for notarization
-xcrun altool --notarize-app -f release/HouseLedger-x.x.x.dmg \
+xcrun altool --notarize-app -f release/LanguageLearning-x.x.x.dmg \
   -t osx -u apple-id@example.com -p app-password
 ```
 

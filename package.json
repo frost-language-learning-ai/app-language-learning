@@ -12,9 +12,6 @@
     "react:build": "vite build",
     "start": "electron .",
     "dev": "concurrently \"npm run react:start\" \"wait-on tcp:5173 && electron .\"",
-    "setup": "node scripts/setup-complete.js",
-    "setup:ollama": "node scripts/setup-ollama.js",
-    "dev:env": "node scripts/dev-env.js",
     "dev:server": "node server/src/app.js",
     "dev:frontend": "vite",
     "generate:icons": "node ./scripts/generate-icons.js",
@@ -24,7 +21,9 @@
     "predist:win32": "npm run generate:icons && npm run kill-running",
     "dist:win32": "npm run react:build && electron-builder --publish never --win nsis --ia32",
     "predist:win:all": "npm run generate:icons && npm run kill-running",
-    "dist:win:all": "npm run react:build && electron-builder --publish never --win nsis --x64 --ia32",
+    "dist:win:all": "npm run react:build && electron-builder --publish never --win nsis --x64",
+    "predist:win:both": "npm run generate:icons && npm run kill-running",
+    "dist:win:both": "npm run react:build && electron-builder --publish never --win nsis --x64 --ia32",
     "android:build": "npm run react:build && npx cap copy android && npx cap open android",
     "android:sync": "npm run react:build && npx cap sync android",
     "server:dev": "node server/src/app.js",
@@ -67,11 +66,12 @@
     "wait-on": "^9.1.0"
   },
   "build": {
-    "appId": "com.frost.houseledger",
-    "productName": "HouseLedger",
+    "appId": "com.frost.languagelearning",
+    "productName": "LanguageLearning",
     "icon": "build/icons/icon",
     "files": [
       "Desktop/electron/**/*",
+      "server/**/*",
       "dist/**/*",
       "package.json"
     ],
@@ -82,8 +82,8 @@
       "output": "release"
     },
     "win": {
-      "executableName": "HouseLedger",
-      "artifactName": "HouseLedger-${version}-${arch}.${ext}",
+      "executableName": "LanguageLearning",
+      "artifactName": "LanguageLearning-${version}-${arch}.${ext}",
       "target": [
         {
           "target": "nsis",
@@ -95,8 +95,8 @@
       ]
     },
     "mac": {
-      "executableName": "HouseLedger",
-      "artifactName": "HouseLedger-mac-${version}-${arch}.${ext}",
+      "executableName": "LanguageLearning",
+      "artifactName": "LanguageLearning-mac-${version}-${arch}.${ext}",
       "target": [
         {
           "target": "dmg",
@@ -118,11 +118,11 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "guid": "com.frost.houseledger",
+      "guid": "com.frost.languagelearning",
       "deleteAppDataOnUninstall": false,
       "createStartMenuShortcut": true,
       "createDesktopShortcut": true,
-      "shortcutName": "HouseLedger"
+      "shortcutName": "LanguageLearning"
     },
     "extraMetadata": {
       "main": "Desktop/electron/main.js"

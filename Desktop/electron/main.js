@@ -1,8 +1,27 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+import { app, BrowserWindow } from "electron";
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === 'development';
+const apiUrl = "http://127.0.0.1:8787/health";
 
 let mainWindow;
+
+async function isApiRunning() {
+  try {
+    const response = await fetch(apiUrl, { signal: AbortSignal.timeout(1000) });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function ensureApiServer() {
+  if (await isApiRunning()) return;
+
+  await import(pathToFileURL(path.join(__dirname, "../../server/src/app.js")).href);
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -17,7 +36,7 @@ function createWindow() {
 
   const startUrl = isDev
     ? 'http://localhost:5173'
-    : `file://${path.join(__dirname, '../../dist/index.html')}`;
+    : pathToFileURL(path.join(__dirname, '../../dist/index.html')).toString();
 
   mainWindow.loadURL(startUrl);
 
@@ -26,7 +45,10 @@ function createWindow() {
   }
 }
 
-app.on('ready', createWindow);
+app.whenReady().then(async () => {
+  await ensureApiServer();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
