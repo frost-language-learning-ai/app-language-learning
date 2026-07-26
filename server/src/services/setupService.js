@@ -6,6 +6,10 @@ const OLLAMA_STARTUP_TIMEOUT_MS = 10000;
 const OLLAMA_STATUS_POLL_INTERVAL_MS = 500;
 let modelDownload = { state: "idle", progress: 0, message: "", error: null };
 
+function isModelInstalled(models, modelName) {
+  return models.some((model) => model === modelName || model.startsWith(`${modelName}:`));
+}
+
 /**
  * Check Ollama installation and version
  */
@@ -31,7 +35,7 @@ export async function checkOllamaStatus() {
  */
 async function checkOllamaRunning() {
   try {
-    const response = await fetch(`${config.ollamaBaseUrl}/tags`, {
+    const response = await fetch(`${config.ollamaBaseUrl}/api/tags`, {
       method: "GET",
       signal: AbortSignal.timeout(3000)
     });
@@ -96,7 +100,7 @@ export async function startOllama() {
  */
 export async function getInstalledModels() {
   try {
-    const response = await fetch(`${config.ollamaBaseUrl}/tags`, {
+    const response = await fetch(`${config.ollamaBaseUrl}/api/tags`, {
       method: "GET"
     });
     if (!response.ok) {
@@ -107,11 +111,12 @@ export async function getInstalledModels() {
     }
     const data = await response.json();
     const models = data.models || [];
+    const modelNames = models.map((model) => model.name);
     
     return {
-      all: models.map(m => m.name),
-      embeddinggemma: models.some(m => m.name.includes("embeddinggemma")),
-      gemma3: models.some(m => m.name.includes("gemma3"))
+      all: modelNames,
+      embeddinggemma: isModelInstalled(modelNames, config.ollamaEmbeddingModel),
+      gemma3: isModelInstalled(modelNames, config.ollamaModel)
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -155,7 +160,7 @@ export async function startModelDownload() {
   }
 
   const models = await getInstalledModels();
-  if (models.embeddinggemma) {
+  if (models.embeddinggemma && models.gemma3) {
     modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null };
     return modelDownload;
   }
@@ -164,29 +169,50 @@ export async function startModelDownload() {
     return modelDownload;
   }
 
-  modelDownload = { state: "running", progress: 0, message: "Preparing download...", error: null };
-  const child = spawn("ollama", ["pull", "embeddinggemma"], { windowsHide: true });
-  let output = "";
+  const requiredModels = [
+    !models.embeddinggemma && config.ollamaEmbeddingModel,
+    !models.gemma3 && config.ollamaModel
+  ].filter(Boolean);
+  modelDownload = { state: "running", progress: 0, message: "Preparing model download...", error: null };
 
-  const updateProgress = (chunk) => {
-    output += chunk.toString();
-    const percentMatches = [...output.matchAll(/\b(\d{1,3})%/g)];
-    const latest = percentMatches.at(-1);
-    if (latest) modelDownload.progress = Math.min(99, Number(latest[1]));
-    const lastLine = output.split(/\r?\n|\r/).filter(Boolean).at(-1);
-    if (lastLine) modelDownload.message = lastLine.replace(/\x1b\[[0-9;]*m/g, "").trim();
+  const downloadNextModel = (index) => {
+    if (index >= requiredModels.length) {
+      modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null };
+      return;
+    }
+
+    const modelName = requiredModels[index];
+    const child = spawn("ollama", ["pull", modelName], { windowsHide: true });
+    let output = "";
+    const baseProgress = (index / requiredModels.length) * 100;
+    const progressRange = 100 / requiredModels.length;
+
+    const updateProgress = (chunk) => {
+      output += chunk.toString();
+      const percentMatches = [...output.matchAll(/\b(\d{1,3})%/g)];
+      const latest = percentMatches.at(-1);
+      if (latest) {
+        modelDownload.progress = Math.min(99, Math.floor(baseProgress + (Number(latest[1]) / 100) * progressRange));
+      }
+      const lastLine = output.split(/\r?\n|\r/).filter(Boolean).at(-1);
+      if (lastLine) modelDownload.message = `${modelName}: ${lastLine.replace(/\x1b\[[0-9;]*m/g, "").trim()}`;
+    };
+
+    child.stdout.on("data", updateProgress);
+    child.stderr.on("data", updateProgress);
+    child.once("error", (error) => {
+      modelDownload = { state: "failed", progress: Math.floor(baseProgress), message: "Download could not start.", error: error.message };
+    });
+    child.once("close", (code) => {
+      if (code !== 0) {
+        modelDownload = { state: "failed", progress: modelDownload.progress, message: "Download failed.", error: output.trim() || `Ollama exited with code ${code}` };
+        return;
+      }
+      downloadNextModel(index + 1);
+    });
   };
 
-  child.stdout.on("data", updateProgress);
-  child.stderr.on("data", updateProgress);
-  child.once("error", (error) => {
-    modelDownload = { state: "failed", progress: 0, message: "Download could not start.", error: error.message };
-  });
-  child.once("close", (code) => {
-    modelDownload = code === 0
-      ? { state: "completed", progress: 100, message: "AI models are ready.", error: null }
-      : { state: "failed", progress: modelDownload.progress, message: "Download failed.", error: output.trim() || `Ollama exited with code ${code}` };
-  });
+  downloadNextModel(0);
 
   return modelDownload;
 }
@@ -209,6 +235,6 @@ export async function getSetupStatus() {
   return {
     ollama,
     models,
-    ready: ollama.installed && ollama.running && models.embeddinggemma
+    ready: ollama.installed && ollama.running && models.embeddinggemma && models.gemma3
   };
 }

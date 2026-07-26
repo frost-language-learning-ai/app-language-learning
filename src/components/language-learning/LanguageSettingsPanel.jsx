@@ -155,7 +155,7 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
                   <tr key={lang.code}>
                     <td style={{ fontFamily: "monospace" }}>{lang.code}</td>
                     <td>{lang.name}</td>
-                    <td style={{ textAlign: "center" }}>
+                    <td>
                       <span style={{ color: lang.visible === false ? "var(--ll-text-muted)" : "var(--ll-accent)" }}>
                         {lang.visible === false ? "○ Hidden" : "✓ Visible"}
                       </span>

@@ -77,7 +77,7 @@ export default function AiSetupPanel({ t }) {
 
   const ollamaInstalled = Boolean(status?.ollama?.installed);
   const ollamaRunning = Boolean(status?.ollama?.running);
-  const modelsReady = Boolean(status?.models?.embeddinggemma);
+  const modelsReady = Boolean(status?.models?.embeddinggemma && status?.models?.gemma3);
 
   return (
     <section className="ll-card ll-ai-setup">
