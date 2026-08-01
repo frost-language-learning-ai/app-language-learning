@@ -14,7 +14,17 @@ const LOCALE_OPTIONS = [
   { value: "tw", label: "繁體中文" }
 ];
 
-export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
+export default function LanguageSettingsPanel({ 
+  t, 
+  locale, 
+  onLocaleChange,
+  characterStyle,
+  onCharacterStyleChange,
+  characterGender,
+  onCharacterGenderChange,
+  dereRank,
+  onDereRankChange
+}) {
   const [languages, setLanguages] = useState([]);
   const [newLanguageCode, setNewLanguageCode] = useState("");
   const [newLanguageName, setNewLanguageName] = useState("");
@@ -128,7 +138,51 @@ export default function LanguageSettingsPanel({ t, locale, onLocaleChange }) {
         </select>
       </label>
 
-      <hr style={{ margin: "12px 0", borderColor: "var(--ll-border)" }} />
+      <hr style={{ margin: "20px 0", borderColor: "var(--ll-border)" }} />
+
+      {/* AI Character Settings Section */}
+      <h4 style={{ marginTop: "20px", marginBottom: "12px" }}>AI Character Settings</h4>
+      
+      <label className="ll-settings-label">
+        <span>{t.llCharacterStyleLabel || "Character"}</span>
+        <select 
+          value={characterStyle} 
+          onChange={(e) => onCharacterStyleChange(e.target.value)} 
+          className="ll-input"
+        >
+          <option value="tsundere">{t.llCharacterTsundere || "Tsundere"}</option>
+          <option value="kuudere">{t.llCharacterKuudere || "Kuudere"}</option>
+          <option value="downer">{t.llCharacterDowner || "Downer"}</option>
+          <option value="kuudere_downer">{t.llCharacterKuudereDowner || "Kuudere Downer"}</option>
+        </select>
+      </label>
+
+      <label className="ll-settings-label">
+        <span>{t.llCharacterGenderLabel || "Gender"}</span>
+        <select 
+          value={characterGender} 
+          onChange={(e) => onCharacterGenderChange(e.target.value)} 
+          className="ll-input"
+        >
+          <option value="female">{t.llGenderFemale || "Female"}</option>
+          <option value="male">{t.llGenderMale || "Male"}</option>
+          <option value="neutral">{t.llGenderNeutral || "Neutral"}</option>
+        </select>
+      </label>
+
+      <label className="ll-settings-label">
+        <span>{t.llDereRankLabel || "Dere Rank"}</span>
+        <select
+          value={String(dereRank)}
+          onChange={(e) => onDereRankChange(Number(e.target.value))}
+          className="ll-input"
+        >
+          <option value="1">{t.llDereRank1 || "Rank 1 (25%)"}</option>
+          <option value="2">{t.llDereRank2 || "Rank 2 (50%)"}</option>
+          <option value="3">{t.llDereRank3 || "Rank 3 (75%)"}</option>
+          <option value="4">{t.llDereRank4 || "Rank 4 (100%)"}</option>
+        </select>
+      </label>
 
       <hr style={{ margin: "20px 0", borderColor: "var(--ll-border)" }} />
 

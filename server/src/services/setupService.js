@@ -4,7 +4,7 @@ import { AppError } from "../errors.js";
 
 const OLLAMA_STARTUP_TIMEOUT_MS = 10000;
 const OLLAMA_STATUS_POLL_INTERVAL_MS = 500;
-let modelDownload = { state: "idle", progress: 0, message: "", error: null };
+let modelDownload = { state: "idle", progress: 0, message: "", error: null, logs: [] };
 
 function isModelInstalled(models, modelName) {
   return models.some((model) => model === modelName || model.startsWith(`${modelName}:`));
@@ -161,7 +161,7 @@ export async function startModelDownload() {
 
   const models = await getInstalledModels();
   if (models.embeddinggemma && models.gemma3) {
-    modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null };
+    modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null, logs: [] };
     return modelDownload;
   }
 
@@ -173,11 +173,12 @@ export async function startModelDownload() {
     !models.embeddinggemma && config.ollamaEmbeddingModel,
     !models.gemma3 && config.ollamaModel
   ].filter(Boolean);
-  modelDownload = { state: "running", progress: 0, message: "Preparing model download...", error: null };
+  modelDownload = { state: "running", progress: 0, message: "Preparing model download...", error: null, logs: ["Preparing model download..."] };
 
   const downloadNextModel = (index) => {
     if (index >= requiredModels.length) {
-      modelDownload = { state: "completed", progress: 100, message: "AI models are ready.", error: null };
+      const finalMessage = "AI models are ready.";
+      modelDownload = { state: "completed", progress: 100, message: finalMessage, error: null, logs: [...modelDownload.logs, finalMessage] };
       return;
     }
 
@@ -194,18 +195,34 @@ export async function startModelDownload() {
       if (latest) {
         modelDownload.progress = Math.min(99, Math.floor(baseProgress + (Number(latest[1]) / 100) * progressRange));
       }
-      const lastLine = output.split(/\r?\n|\r/).filter(Boolean).at(-1);
-      if (lastLine) modelDownload.message = `${modelName}: ${lastLine.replace(/\x1b\[[0-9;]*m/g, "").trim()}`;
+      const lines = output.split(/\r?\n|\r/).filter(Boolean);
+      const lastLine = lines.at(-1);
+      if (lastLine) {
+        const cleanLine = lastLine.replace(/\x1b\[[0-9;]*m/g, "").trim();
+        const logMessage = `${modelName}: ${cleanLine}`;
+        modelDownload.message = logMessage;
+        // Add to logs if it's a new line
+        if (!modelDownload.logs.includes(logMessage)) {
+          modelDownload.logs.push(logMessage);
+          // Keep only last 50 log lines to prevent memory overflow
+          if (modelDownload.logs.length > 50) {
+            modelDownload.logs.shift();
+          }
+        }
+      }
     };
 
     child.stdout.on("data", updateProgress);
     child.stderr.on("data", updateProgress);
     child.once("error", (error) => {
-      modelDownload = { state: "failed", progress: Math.floor(baseProgress), message: "Download could not start.", error: error.message };
+      const errorMsg = "Download could not start.";
+      modelDownload = { state: "failed", progress: Math.floor(baseProgress), message: errorMsg, error: error.message, logs: [...modelDownload.logs, errorMsg, error.message] };
     });
     child.once("close", (code) => {
       if (code !== 0) {
-        modelDownload = { state: "failed", progress: modelDownload.progress, message: "Download failed.", error: output.trim() || `Ollama exited with code ${code}` };
+        const errorMsg = "Download failed.";
+        const errorDetail = output.trim() || `Ollama exited with code ${code}`;
+        modelDownload = { state: "failed", progress: modelDownload.progress, message: errorMsg, error: errorDetail, logs: [...modelDownload.logs, errorMsg, errorDetail] };
         return;
       }
       downloadNextModel(index + 1);

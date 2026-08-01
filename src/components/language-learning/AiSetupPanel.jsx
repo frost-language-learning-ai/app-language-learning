@@ -135,6 +135,7 @@ export default function AiSetupPanel({ t }) {
         </button>
       )}
 
+      {/* Display model installation logs if available */}
       {download?.state === "running" && (
         <div className="ll-ai-download-progress" role="status" aria-live="polite">
           <div className="ll-ai-download-progress-label">
@@ -144,6 +145,17 @@ export default function AiSetupPanel({ t }) {
           <div className="ll-ai-download-progress-track" aria-hidden="true">
             <div className="ll-ai-download-progress-value" style={{ width: `${download.progress}%` }} />
           </div>
+
+          {/* Display ollama setup logs if available */}
+          {download.logs && download.logs.length > 0 && (
+            <div className="ll-ai-download-logs">
+              {download.logs.map((log, index) => (
+                <div key={index} className="ll-ai-download-log-line">
+                  {log}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

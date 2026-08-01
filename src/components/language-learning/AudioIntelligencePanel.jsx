@@ -564,6 +564,13 @@ export default function AudioIntelligencePanel({
     <section className="ll-card">
       <h3>{t.llAudioTitle || "Audio Intelligence"}</h3>
       
+      {/* Error/Status Message at Top */}
+      {message && (
+        <p className={`ll-message ${message.includes("Failed") || message.includes("failed") ? "ll-message-error" : ""}`} role="status">
+          {message}
+        </p>
+      )}
+      
       {practiceWord && (
         <div className="ll-preview" style={{ background: "var(--ll-surface-raised)", padding: "12px", borderRadius: "6px", marginBottom: "16px" }}>
           <p><strong>📚 Practice Word:</strong></p>
@@ -759,7 +766,6 @@ export default function AudioIntelligencePanel({
 
       {chunks.length > 0 && <p className="ll-message">{t.llCapturedChunks || "Captured chunks"}: {chunks.length}</p>}
       {busy && <p className="ll-message">{t.llSaving || "Saving..."}</p>}
-      {message && <p className="ll-message">{message}</p>}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-# To JP version
+# Ollama/Gemmaを使用した語学学習アプリ
 [English version here](README.md)
 
 # Language Learning App with Ollama/Gemma
@@ -94,6 +94,25 @@ npm run dist:win          # Windows ビルド
 npm run server:test       # API テスト実行
 ```
 
+## ドキュメント
+
+### 英語版ドキュメント
+- [README](./README.md) - 英語による概要説明
+- [SETUP](doc/SETUP.md) - 詳細セットアップガイド
+- [TROUBLESHOOTING](doc/TROUBLESHOOTING.md) - よくある問題と解決法
+- [ARCHITECTURE](doc/ARCHITECTURE.md) - システム設計とプロジェクト構成
+- [DEVELOPMENT](doc/DEVELOPMENT.md) - 開発ガイドとヒント
+- [DEPLOYMENT](doc/DEPLOYMENT.md) - ビルドとデプロイメントガイド
+
+### 日本語ドキュメント
+- [日本語版 README](./README_JP.md) - 日本語による概要説明
+- [セットアップガイド](doc_jp/SETUP_JP.md) - 詳細セットアップガイド
+- [よくある問題と解決法](doc_jp/TROUBLESHOOTING_JP.md) - よくある問題と解決法
+- [システム設計](doc_jp/ARCHITECTURE_JP.md) - システム設計
+- [開発ガイド](doc_jp/DEVELOPMENT_JP.md) - 開発ガイド
+- [ビルド・デプロイメント](doc_jp/DEPLOYMENT_JP.md) - ビルド・デプロイメント
+
+
 ## よくある問題
 
 **Ollama に接続できない**
@@ -161,6 +180,9 @@ CREATE EXTENSION IF NOT EXISTS vector;
 - Gemma: Google のオープンソース、完全無料
 - すべてローカル実行（クラウド課金なし）
 
-## ライセンス
+ ## ライセンス
 
-MIT License
+- 個人利用および商用利用は無料です。
+- 商用利用の場合は、必ず筆者および開発者に連絡してください。
+
+詳細は [LICENSE](LICENSE) ファイルをご覧ください。

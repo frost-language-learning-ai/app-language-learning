@@ -7,12 +7,18 @@ function detectType(text) {
   return "nuance_comparison";
 }
 
-export default function ReasoningWorkspace({ termId = 1, onError, t }) {
+export default function ReasoningWorkspace({ 
+  termId = 1,
+  sourceLanguage = "en",
+  targetLanguage = "ja",
+  characterStyle = "tsundere",
+  characterGender = "neutral",
+  dereRank = 2,
+  onError, 
+  t 
+}) {
   const [chatText, setChatText] = useState("");
   const [aiAnswer, setAiAnswer] = useState("");
-  const [characterStyle, setCharacterStyle] = useState("tsundere");
-  const [characterGender, setCharacterGender] = useState("neutral");
-  const [dereRank, setDereRank] = useState(2);
   const [selectedText, setSelectedText] = useState("");
   const [notes, setNotes] = useState([]);
   const [message, setMessage] = useState("");
@@ -60,7 +66,7 @@ export default function ReasoningWorkspace({ termId = 1, onError, t }) {
       const result = await languageApi.askReasoning({
         termId,
         prompt,
-        language: "ja",
+        language: targetLanguage,
         characterStyle,
         characterGender,
         dereRank
@@ -77,8 +83,19 @@ export default function ReasoningWorkspace({ termId = 1, onError, t }) {
   }
 
   return (
-    <section className="ll-card">
-      <h3>{t.llReasoningTitle || "Reasoning Pipeline"}</h3>
+    <div>
+      <h3>{t.llReasoningTitle || "Reasoning Prompt "}</h3>
+      <p style={{ marginTop: "4px", marginBottom: "16px", fontSize: "0.9em", color: "var(--ll-text-muted)", lineHeight: "1.4" }}>
+        {t.llReasoningDesc || "Investigate a specific word in depth. Ask about grammar, usage, or nuance, then save valuable insights to your Knowledge Base."}
+      </p>
+      
+      {/* Error/Status Message at Top */}
+      {message && (
+        <p className={`ll-message ${message.includes("Failed") || message.includes("failed") ? "ll-message-error" : ""}`} role="status">
+          {message}
+        </p>
+      )}
+      
       <div className="ll-two-col">
         <div>
           <label>{t.llChatLabel || "AI Chat"}</label>
@@ -88,32 +105,6 @@ export default function ReasoningWorkspace({ termId = 1, onError, t }) {
             className="ll-textarea"
             placeholder={t.llChatPlaceholder || "Paste discussion text and select part to save"}
           />
-          <div className="ll-row">
-            <label>{t.llCharacterStyleLabel || "Character"}</label>
-            <select value={characterStyle} onChange={(e) => setCharacterStyle(e.target.value)} className="ll-input">
-              <option value="tsundere">{t.llCharacterTsundere || "Tsundere"}</option>
-              <option value="kuudere">{t.llCharacterKuudere || "Kuudere"}</option>
-              <option value="downer">{t.llCharacterDowner || "Downer"}</option>
-              <option value="kuudere_downer">{t.llCharacterKuudereDowner || "Kuudere Downer"}</option>
-            </select>
-            <label>{t.llCharacterGenderLabel || "Gender"}</label>
-            <select value={characterGender} onChange={(e) => setCharacterGender(e.target.value)} className="ll-input">
-              <option value="female">{t.llGenderFemale || "Female"}</option>
-              <option value="male">{t.llGenderMale || "Male"}</option>
-              <option value="neutral">{t.llGenderNeutral || "Neutral"}</option>
-            </select>
-            <label>{t.llDereRankLabel || "Dere Rank"}</label>
-            <select
-              value={String(dereRank)}
-              onChange={(e) => setDereRank(Number(e.target.value))}
-              className="ll-input"
-            >
-              <option value="1">{t.llDereRank1 || "Rank 1 (25%)"}</option>
-              <option value="2">{t.llDereRank2 || "Rank 2 (50%)"}</option>
-              <option value="3">{t.llDereRank3 || "Rank 3 (75%)"}</option>
-              <option value="4">{t.llDereRank4 || "Rank 4 (100%)"}</option>
-            </select>
-          </div>
           <div className="ll-row">
             <button onClick={onAskAi} disabled={asking || !chatText.trim()} className="ll-button">
               {asking ? (t.llAskingAi || "Asking AI...") : (t.llAskAiButton || "Ask AI")}
@@ -148,7 +139,6 @@ export default function ReasoningWorkspace({ termId = 1, onError, t }) {
           </div>
         </div>
       </div>
-      {message && <p className="ll-message">{message}</p>}
-    </section>
+    </div>
   );
 }

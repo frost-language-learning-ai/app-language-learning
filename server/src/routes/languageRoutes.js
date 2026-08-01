@@ -91,26 +91,92 @@ languageRoutes.patch("/languages/:code", asyncHandler(async (req, res) => {
 
 languageRoutes.post("/fast-pipeline/preview", asyncHandler(async (req, res) => {
   const body = parseOrThrow(fastPreviewInputSchema, req.body);
-  const preview = await generateFastPipelineTerm(body.term);
+  const sourceLang = body.sourceLanguage || "en";
+  const targetLang = body.targetLanguage || "de";
+  const phoneticType = body.phoneticType || "british";
+  const preview = await generateFastPipelineTerm(body.term, sourceLang, targetLang, phoneticType);
   res.json({ ok: true, preview });
 }));
 
 languageRoutes.post("/fast-pipeline/confirm", asyncHandler(async (req, res) => {
   const body = parseOrThrow(fastConfirmInputSchema, req.body);
 
+  const sourceLang = body.sourceLanguage || "en";
+  const targetLang = body.targetLanguage || "de";
+
   const inserted = await withTransaction(async (client) => {
+    const detailsJson = JSON.stringify(body.details);
+    const partOfSpeech = body.details.part_of_speech || null;
     const r = await client.query(
-      `INSERT INTO core_terms (term_en, term_de, ipa_uk)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (term_en, term_de)
-       DO UPDATE SET ipa_uk = EXCLUDED.ipa_uk
-       RETURNING id, term_en, term_de, ipa_uk, created_at`,
-      [body.english.trim(), body.german.trim(), body.uk_phonetic.trim()]
+      `INSERT INTO core_terms (term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (term_en, term_de, source_lang, target_lang)
+       DO UPDATE SET ipa_uk = EXCLUDED.ipa_uk, part_of_speech = EXCLUDED.part_of_speech, details = EXCLUDED.details
+       RETURNING id, term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details, created_at`,
+      [body.term.trim(), body.translation.trim(), body.details.phonetic.trim(), sourceLang, targetLang, partOfSpeech, detailsJson]
     );
-    return r.rows[0];
+    const term = r.rows[0];
+    if (term.details && typeof term.details === 'string') {
+      term.details = JSON.parse(term.details);
+    }
+    return term;
   });
 
   res.status(201).json({ ok: true, term: inserted });
+}));
+
+languageRoutes.get("/core-terms", asyncHandler(async (req, res) => {
+  const limit = Math.min(Number(req.query.limit) || 50, 100);
+  const offset = Math.max(Number(req.query.offset) || 0, 0);
+  const sourceLang = req.query.sourceLang;
+  const targetLang = req.query.targetLang;
+
+  let query = `SELECT id, term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details, created_at
+               FROM core_terms`;
+  let countQuery = `SELECT COUNT(*) as total FROM core_terms`;
+  const params = [];
+  const whereConditions = [];
+
+  if (sourceLang) {
+    params.push(sourceLang);
+    whereConditions.push(`source_lang = $${params.length}`);
+  }
+
+  if (targetLang) {
+    params.push(targetLang);
+    whereConditions.push(`target_lang = $${params.length}`);
+  }
+
+  if (whereConditions.length > 0) {
+    const whereClause = ` WHERE ${whereConditions.join(" AND ")}`;
+    query += whereClause;
+    countQuery += whereClause;
+  }
+
+  query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  params.push(limit, offset);
+
+  const result = await pool.query(query, params);
+  const countResult = await pool.query(countQuery, params.slice(0, whereConditions.length));
+  const total = Number(countResult.rows[0].total);
+
+  const terms = result.rows.map(term => {
+    if (term.details && typeof term.details === 'string') {
+      term.details = JSON.parse(term.details);
+    }
+    return term;
+  });
+
+  res.json({ 
+    ok: true, 
+    terms,
+    pagination: {
+      limit,
+      offset,
+      total,
+      hasMore: offset + limit < total
+    }
+  });
 }));
 
 languageRoutes.post("/knowledge-nodes", asyncHandler(async (req, res) => {

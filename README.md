@@ -1,4 +1,5 @@
 # Language Learning App with Ollama/Gemma
+[日本語版 README](./README_JP.md)
 
 Private language learning app with local LLM. Ollama + Gemma, fully local, completely free.
 
@@ -67,8 +68,6 @@ npm run dist:win         # Windows build
 - [開発ガイド](doc_jp/DEVELOPMENT_JP.md) - 開発ガイド
 - [ビルド・デプロイメント](doc_jp/DEPLOYMENT_JP.md) - ビルド・デプロイメント
 
-### 日本語版 README
-- [日本語版 README](doc_jp/README_JP.md) - 日本語による概要説明
 
 ## Tech Stack
 
@@ -84,4 +83,7 @@ npm run dist:win         # Windows build
 
 ## License
 
-MIT License
+Free for personal and commercial use.
+However, you need to contact the author and developer for commercial use.
+
+Please see the [LICENSE](LICENSE) file for more details.

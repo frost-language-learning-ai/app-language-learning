@@ -58,7 +58,8 @@ async function call(path, options = {}) {
 }
 
 export const languageApi = {
-  fastPreview(term, sourceLanguage = "en", targetLanguage = "de") {
+  fastPreview(payload) {
+    const { term, sourceLanguage = "en", targetLanguage = "de" } = payload;
     return call("/fast-pipeline/preview", {
       method: "POST",
       body: JSON.stringify({ term, sourceLanguage, targetLanguage })
@@ -132,6 +133,14 @@ export const languageApi = {
     return call(`/languages/${code}`, {
       method: "PATCH",
       body: JSON.stringify({ visible })
+    });
+  },
+  getCoreTerms(limit = 50, offset = 0, sourceLang = null, targetLang = null) {
+    let url = `/core-terms?limit=${limit}&offset=${offset}`;
+    if (sourceLang) url += `&sourceLang=${sourceLang}`;
+    if (targetLang) url += `&targetLang=${targetLang}`;
+    return call(url, {
+      method: "GET"
     });
   }
 };

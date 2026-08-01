@@ -1,17 +1,41 @@
 {
   "fastPipelineTerm": [
-    "Generate a vocabulary-learning entry for {{TERM}}.",
-    "Return English, German, nuance, 1 to 5 examples, and a category suggestion.",
-    "Use a {{CHARACTER_STYLE_LABEL}} {{CHARACTER_GENDER_LABEL}} voice at {{DERE_PERCENT}} intensity."
+    "Generate a vocabulary-learning entry for the word: {{TERM}}",
+    "Source language: {{SOURCE_LANGUAGE}}",
+    "Target language: {{TARGET_LANGUAGE}}",
+    "Use a {{CHARACTER_STYLE_LABEL}} {{CHARACTER_GENDER_LABEL}} voice at {{DERE_PERCENT}} intensity.",
+    
+    "",
+    "Return a JSON response with the following structure:",
+
+    "{",
+    "  \"source_language\": \"{{SOURCE_LANGUAGE}}\",",
+    "  \"target_language\": \"{{TARGET_LANGUAGE}}\",",
+    "  \"term\": \"the term in source language\",",
+    "  \"translation\": \"translation in target language\",",
+    "  \"part_of_speech\": \"part of speech (noun, verb, adjective, adverb, preposition, etc.)\",",
+    "  \"phonetic\": \"IPA phonetic notation ({{PHONETIC_TYPE}} pronunciation)\",",
+    "  \"category\": \"suggested category\",",
+    "  \"nuance\": \"standard nuance explanation in {{SOURCE_LANGUAGE}}\",",
+    "  \"slang_nuance\": \"slang or informal nuance explanation in {{SOURCE_LANGUAGE}} (if applicable)\",",
+    "  \"examples\": [\"1-3 example sentences in TARGET language\"],",
+    "  \"slang_examples\": [\"1-2 slang/informal example sentences in TARGET language (if applicable)\"]",
+    "}",
+    "",
+    
+    "Examples must be in {{TARGET_LANGUAGE}}. Include 1-3 standard examples and 1-2 slang examples if the term has informal usage."
   ],
+
   "accentAnalysis": [
     "Accent analysis is not available in the local Gemma/Ollama configuration."
   ],
+
   "reasoningAnswer": [
     "Answer the following language-learning question in {{TARGET_LANG}}.",
     "Use a {{CHARACTER_STYLE_LABEL}} {{CHARACTER_GENDER_LABEL}} voice at {{DERE_PERCENT}} intensity.",
     "Question: {{USER_PROMPT}}"
   ],
+
   "pronunciationEvaluation": [
     "You are a language pronunciation coach. Analyze the user's pronunciation and provide specific improvement points.",
     "Target Word/Phrase: {{TARGET_PHRASE}}",
@@ -21,6 +45,7 @@
     "User's Waveform Similarity: {{WAVEFORM_SIMILARITY}}%",
     "Timing Difference: {{TIMING_INFO}}",
     "",
+ 
     "Provide 3-5 specific, actionable improvement points in {{TARGET_LANG}}.",
     "Format: bullet points with clear explanation for each point.",
     "Focus on: articulation, timing, stress, and intonation."

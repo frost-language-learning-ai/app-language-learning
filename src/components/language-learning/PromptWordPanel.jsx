@@ -15,11 +15,12 @@ const DEFAULT_LANGUAGES = [
   { code: "pt", name: "Português", visible: true }
 ];
 
-export default function FastPipelinePanel({ 
+export default function PromptWordPanel({ 
   sourceLanguage, 
-  setSourceLanguage, 
-  targetLanguage, 
-  setTargetLanguage, 
+  targetLanguage,
+  phoneticType,
+  setPhoneticType,
+  phoneticTypesByLanguage,
   onError,
   onPronunciationPracticeStart,
   t 
@@ -48,16 +49,19 @@ export default function FastPipelinePanel({
   }, []);
 
   async function onPreview() {
+    if (!term.trim()) return;
     setStatus("loading");
     setMessage("");
+    setPreview(null);
     try {
-      const result = await languageApi.fastPreview(
-        term.trim(),
+      const result = await languageApi.fastPreview({ 
+        term: term.trim(),
         sourceLanguage,
-        targetLanguage
-      );
+        targetLanguage,
+        phoneticType: hasPhoneticTypes ? phoneticType : undefined
+      });
       setPreview(result.preview);
-      setStatus("ready");
+      setStatus("previewed");
     } catch (error) {
       setStatus("error");
       const suffix = error?.requestId ? ` (requestId: ${error.requestId})` : "";
@@ -75,13 +79,15 @@ export default function FastPipelinePanel({
       await languageApi.fastConfirm({
         sourceLanguage,
         targetLanguage,
-        term: preview.source || term,
-        translation: preview.target,
+        term: preview.term,
+        translation: preview.translation,
         details: {
           phonetic: preview.phonetic,
+          part_of_speech: preview.part_of_speech,
           nuance: preview.nuance,
-          category: preview.category_suggestion,
-          examples: preview.examples
+          category: preview.category,
+          examples: preview.examples,
+          slang_examples: preview.slang_examples
         }
       });
       setStatus("saved");
@@ -91,8 +97,8 @@ export default function FastPipelinePanel({
       if (onPronunciationPracticeStart) {
         setTimeout(() => {
           onPronunciationPracticeStart({
-            sourceWord: preview.source || term,
-            targetWord: preview.target,
+            sourceWord: preview.term,
+            targetWord: preview.translation,
             phonetic: preview.phonetic,
             examples: preview.examples
           });
@@ -109,51 +115,22 @@ export default function FastPipelinePanel({
   const sourceLangName = languages.find(l => l.code === sourceLanguage)?.name || "";
   const targetLangName = languages.find(l => l.code === targetLanguage)?.name || "";
 
+  const phoneticTypes = (phoneticTypesByLanguage?.[targetLanguage]) || [];
+  const hasPhoneticTypes = phoneticTypes.length > 0;
+
   return (
-    <section className="ll-card">
-      <h3>{t.llFastTitle || "Fast Pipeline"}</h3>
+    <div>
+      <h3>{t.llFastTitle || "Word Prompt"}</h3>
+      <p style={{ marginTop: "4px", marginBottom: "16px", fontSize: "0.9em", color: "var(--ll-text-muted)", lineHeight: "1.4" }}>
+        {t.llWordLearningDesc || "Quickly learn and save new words. AI generates pronunciation, category, and examples for each term."}
+      </p>
       
-      {/* Language Selection */}
-      <div className="ll-language-row">
-        <div className="ll-language-select">
-          <label>{t.llSourceLanguage || "Source Language"}</label>
-          <select
-            value={sourceLanguage}
-            onChange={(e) => setSourceLanguage(e.target.value)}
-            className="ll-select"
-          >
-            {languages.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="ll-swap-button">
-          <button
-            onClick={() => {
-              setSourceLanguage(targetLanguage);
-              setTargetLanguage(sourceLanguage);
-            }}
-            className="ll-button"
-            title="Swap languages"
-          >
-            ⇄
-          </button>
-        </div>
-
-        <div className="ll-language-select">
-          <label>{t.llTargetLanguage || "Target Language"}</label>
-          <select
-            value={targetLanguage}
-            onChange={(e) => setTargetLanguage(e.target.value)}
-            className="ll-select"
-          >
-            {languages.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {/* Error/Status Message at Top */}
+      {message && (
+        <p className={`ll-message ${status === "error" ? "ll-message-error" : ""}`} role="status">
+          {message}
+        </p>
+      )}
 
       {/* Term Input and Preview */}
       <div className="ll-row">
@@ -170,16 +147,36 @@ export default function FastPipelinePanel({
 
       {preview && (
         <div className="ll-preview">
-          <p><strong>{sourceLanguage.toUpperCase()}:</strong> {preview.source || preview.english || term}</p>
-          <p><strong>{targetLanguage.toUpperCase()}:</strong> {preview.target || preview.german}</p>
+          <p><strong>{sourceLanguage.toUpperCase()}:</strong> {preview.term}</p>
+          <p><strong>{targetLanguage.toUpperCase()}:</strong> {preview.translation}</p>
           {preview.phonetic && <p><strong>Phonetic:</strong> {preview.phonetic}</p>}
-          {preview.nuance && <p><strong>Nuance:</strong> {preview.nuance}</p>}
-          {preview.category_suggestion && <p><strong>Category:</strong> {preview.category_suggestion}</p>}
+          {preview.part_of_speech && <p><strong>Part of Speech:</strong> {preview.part_of_speech}</p>}
+          {preview.category && <p><strong>Category:</strong> {preview.category}</p>}
+          {preview.nuance && (
+            <>
+              <p><strong>Nuance:</strong> {preview.nuance}</p>
+            </>
+          )}
+          {preview.slang_nuance && (
+            <>
+              <p><strong>Slang Nuance:</strong> {preview.slang_nuance}</p>
+            </>
+          )}
           {preview.examples && preview.examples.length > 0 && (
             <>
-              <p><strong>Examples:</strong></p>
+              <p><strong>Examples ({targetLanguage.toUpperCase()}):</strong></p>
               <ul>
                 {preview.examples.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {preview.slang_examples && preview.slang_examples.length > 0 && (
+            <>
+              <p><strong>Slang Examples ({targetLanguage.toUpperCase()}):</strong></p>
+              <ul>
+                {preview.slang_examples.map((s, i) => (
                   <li key={i}>{s}</li>
                 ))}
               </ul>
@@ -188,8 +185,6 @@ export default function FastPipelinePanel({
           <button disabled={status === "saving"} onClick={onConfirm} className="ll-button ll-button-primary">{t.llConfirmSaveButton || "Confirm & Save"}</button>
         </div>
       )}
-
-      {message && <p className="ll-message">{message}</p>}
-    </section>
+    </div>
   );
 }

@@ -246,6 +246,29 @@
   transition: width 220ms ease;
 }
 
+.ll-ai-download-logs {
+  margin-top: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 4px;
+  background: #0d1318;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.ll-ai-download-log-line {
+  color: #a0a0a0;
+  padding: 2px 0;
+  word-break: break-all;
+}
+
+.ll-ai-download-log-line:last-child {
+  color: #ffffff;
+  font-weight: 500;
+}
+
 .ll-preview {
   margin-top: 12px;
 }
@@ -404,7 +427,17 @@
 
 .ll-message {
   margin-top: 10px;
+  margin-bottom: 10px;
   color: var(--ll-text-muted);
+}
+
+.ll-message-error {
+  color: #ff9999;
+  background: rgba(255, 100, 100, 0.1);
+  border-left: 3px solid #ff6666;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 /* Language Selection Styles */
@@ -505,6 +538,256 @@
 
 .ll-languages-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Saved Terms Table Styles */
+.ll-saved-terms-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--ll-border);
+  border-radius: 8px;
+  max-height: 70vh;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.ll-saved-terms-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ll-saved-terms-table th {
+  background: var(--ll-surface-raised);
+  color: var(--ll-text);
+  font-weight: 600;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--ll-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.ll-saved-terms-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ll-border);
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.ll-saved-terms-table tbody tr:hover {
+  background: rgba(66, 165, 160, 0.08);
+}
+
+.ll-saved-terms-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Column widths */
+.ll-saved-terms-table th:nth-child(1),
+.ll-saved-terms-table td:nth-child(1) {
+  width: 16%;
+}
+
+.ll-saved-terms-table th:nth-child(2),
+.ll-saved-terms-table td:nth-child(2) {
+  width: 20%;
+}
+
+.ll-saved-terms-table th:nth-child(3),
+.ll-saved-terms-table td:nth-child(3) {
+  width: 16%;
+}
+
+.ll-saved-terms-table th:nth-child(4),
+.ll-saved-terms-table td:nth-child(4) {
+  width: 12%;
+}
+
+.ll-saved-terms-table th:nth-child(5),
+.ll-saved-terms-table td:nth-child(5) {
+  width: 14%;
+}
+
+.ll-saved-terms-table th:nth-child(6),
+.ll-saved-terms-table td:nth-child(6) {
+  width: 12%;
+}
+
+.ll-saved-terms-table th:nth-child(7),
+.ll-saved-terms-table td:nth-child(7) {
+  width: 10%;
+}
+
+.ll-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ll-pagination-info {
+  color: var(--ll-text-muted);
+  font-size: 0.9em;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .ll-saved-terms-table {
+    min-width: 400px;
+    font-size: 12px;
+  }
+
+  .ll-saved-terms-table th,
+  .ll-saved-terms-table td {
+    padding: 8px 10px;
+  }
+
+  .ll-language-row {
+    flex-direction: column;
+  }
+
+  .ll-language-select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ll-saved-terms-table {
+    min-width: 300px;
+    font-size: 11px;
+  }
+
+  .ll-saved-terms-table th,
+  .ll-saved-terms-table td {
+    padding: 6px 8px;
+  }
+}
+
+/* Term Detail Modal Styles */
+.ll-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.ll-modal-content {
+  background: var(--ll-surface);
+  border: 1px solid var(--ll-border);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.ll-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--ll-text);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.ll-modal-close:hover {
+  background: var(--ll-surface-raised);
+}
+
+.ll-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ll-detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.ll-detail-full-width {
+  grid-column: 1 / -1;
+}
+
+.ll-detail-item label {
+  font-weight: 600;
+  color: var(--ll-text);
+  margin-bottom: 6px;
+  font-size: 0.9em;
+}
+
+.ll-detail-item p {
+  margin: 0;
+  color: var(--ll-text-muted);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.ll-detail-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.ll-detail-list li {
+  margin-bottom: 8px;
+  color: var(--ll-text-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .ll-modal-content {
+    max-width: 90vw;
+    padding: 16px;
+  }
+
+  .ll-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ll-modal-overlay {
+    padding: 8px;
+  }
+
+  .ll-modal-content {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .ll-detail-item label {
+    font-size: 0.85em;
+  }
+
+  .ll-detail-item p {
+    font-size: 0.9em;
+  }
 }
 
 .ll-swap-button {
@@ -614,6 +897,45 @@
   color: var(--ll-text-muted);
   margin-top: 4px;
   font-style: italic;
+}
+
+/* Workbench Mode Selector */
+.ll-mode-selector {
+  background: var(--ll-surface-raised);
+  border: 1px solid var(--ll-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.ll-mode-selector h3 {
+  margin: 0 0 12px 0;
+  font-size: 0.95em;
+  color: var(--ll-text);
+}
+
+/* Freestyle Conversation Container */
+.ll-conversation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ll-conversation-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ll-conversation-container::-webkit-scrollbar-track {
+  background: var(--ll-surface);
+  border-radius: 3px;
+}
+
+.ll-conversation-container::-webkit-scrollbar-thumb {
+  background: var(--ll-border);
+  border-radius: 3px;
+}
+
+.ll-conversation-container::-webkit-scrollbar-thumb:hover {
+  background: #50616d;
 }
 
 .ll-improvement.ll-focus-articulation {

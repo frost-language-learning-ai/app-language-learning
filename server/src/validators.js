@@ -10,31 +10,53 @@ addFormats(ajv);
 export const fastPipelineSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["english", "german", "nuance", "examples", "category_suggestion"],
+  required: ["source_language", "target_language", "term", "translation", "part_of_speech", "phonetic", "category", "nuance", "examples"],
   properties: {
-    english: { type: "string", minLength: 1, maxLength: 120 },
-    german: { type: "string", minLength: 1, maxLength: 120 },
+    source_language: { type: "string", minLength: 2, maxLength: 10 },
+    target_language: { type: "string", minLength: 2, maxLength: 10 },
+    term: { type: "string", minLength: 1, maxLength: 120 },
+    translation: { type: "string", minLength: 1, maxLength: 120 },
+    part_of_speech: { type: "string", minLength: 1, maxLength: 50 },
+    phonetic: { type: "string", minLength: 1, maxLength: 120 },
+    category: { type: "string", minLength: 1, maxLength: 120 },
     nuance: { type: "string", minLength: 1, maxLength: 800 },
+    slang_nuance: { type: "string", minLength: 0, maxLength: 800 },
     examples: {
       type: "array",
       minItems: 1,
       maxItems: 5,
       items: { type: "string", minLength: 1, maxLength: 280 }
     },
-    category_suggestion: { type: "string", minLength: 1, maxLength: 120 }
+    slang_examples: {
+      type: "array",
+      minItems: 0,
+      maxItems: 3,
+      items: { type: "string", minLength: 1, maxLength: 280 }
+    }
   }
 };
 
 export const validateFastPipelineJson = ajv.compile(fastPipelineSchema);
 
 export const fastPreviewInputSchema = z.object({
-  term: z.string().min(1).max(120)
+  term: z.string().min(1).max(120),
+  sourceLanguage: z.string().min(2).max(10).optional(),
+  targetLanguage: z.string().min(2).max(10).optional(),
+  phoneticType: z.string().min(2).max(20).optional()
 });
 
 export const fastConfirmInputSchema = z.object({
-  english: z.string().min(1).max(120),
-  german: z.string().min(1).max(120),
-  uk_phonetic: z.string().min(1).max(120)
+  sourceLanguage: z.string().min(2).max(10).optional(),
+  targetLanguage: z.string().min(2).max(10).optional(),
+  term: z.string().min(1).max(120),
+  translation: z.string().min(1).max(120),
+  details: z.object({
+    phonetic: z.string().min(1).max(120),
+    part_of_speech: z.string().min(1).max(50).optional(),
+    nuance: z.string().optional(),
+    category: z.string().optional(),
+    examples: z.array(z.string()).optional()
+  })
 });
 
 export const knowledgeNodeInputSchema = z.object({

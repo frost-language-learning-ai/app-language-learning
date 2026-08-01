@@ -4,6 +4,7 @@ import { languageRoutes } from "./routes/languageRoutes.js";
 import { setupRoutes } from "./routes/setupRoutes.js";
 import { AppError, toHttpError } from "./errors.js";
 import { httpLogger, logger } from "./logger.js";
+import "./db.js"; // Ensure database is initialized on app startup
 
 const app = express();
 app.use(httpLogger);

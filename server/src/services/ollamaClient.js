@@ -122,9 +122,90 @@ async function ollamaGenerateJson(userPrompt, responseSchema) {
   }
 }
 
-export async function generateFastPipelineTerm(term) {
+function mapPhoneticTypeToLabel(phoneticType) {
+  const map = {
+    // English
+    british: "UK/British",
+    american: "US/American",
+    australian: "Australian",
+    canadian: "Canadian",
+    indian: "Indian",
+    singaporean: "Singaporean",
+    south_african: "South African",
+    irish: "Irish",
+    scottish: "Scottish",
+    new_zealand: "New Zealand",
+    // Spanish
+    spain: "Spain (Castilian)",
+    mexico: "Mexico",
+    argentina: "Argentina",
+    colombia: "Colombia",
+    peru: "Peru",
+    chile: "Chile",
+    venezuela: "Venezuela",
+    caribbean: "Caribbean",
+    // German
+    hochdeutsch: "Hochdeutsch (Standard German)",
+    northern_germany: "Northern Germany",
+    southern_germany: "Southern Germany (Bavaria)",
+    austrian: "Austrian",
+    swiss_german: "Swiss German",
+    belgian_german: "Belgian (Eupen)",
+    south_tyrol: "Northern Italy (South Tyrol)",
+    // French
+    france: "France (Parisian)",
+    belgian_french: "Belgian French",
+    swiss_french: "Swiss French",
+    canadian_french: "Canadian (Quebec)",
+    african_french: "African French",
+    // Japanese
+    tokyo: "Tokyo (Standard)",
+    kansai: "Kansai (Osaka)",
+    kyushu: "Kyushu",
+    tohoku: "Tohoku",
+    hokkaido: "Hokkaido",
+    // Chinese
+    mandarin_beijing: "Mandarin (Beijing)",
+    taiwan: "Taiwan",
+    singapore_chinese: "Singapore",
+    southern_china: "Southern China",
+    // Portuguese
+    portugal: "Portugal",
+    brazil: "Brazil",
+    angola: "Angola",
+    mozambique: "Mozambique",
+    // Arabic
+    msa: "Modern Standard Arabic",
+    egyptian: "Egyptian",
+    levantine: "Levantine",
+    gulf: "Gulf Arabic",
+    maghrebi: "Maghrebi",
+    // Italian
+    standard_italian: "Standard Italian (Florence)",
+    roman: "Roman",
+    neapolitan: "Neapolitan",
+    sicilian: "Sicilian",
+    venetian: "Venetian",
+    // Russian
+    moscow: "Moscow (Standard)",
+    st_petersburg: "St. Petersburg",
+    southern_russia: "Southern Russia",
+    siberian: "Siberian",
+    // Korean
+    seoul: "Seoul (Standard)",
+    busan: "Busan",
+    jeolla: "Jeolla",
+    north_korean: "North Korean"
+  };
+  return map[phoneticType] || "Standard pronunciation";
+}
+
+export async function generateFastPipelineTerm(term, sourceLang = "en", targetLang = "de", phoneticType = "british") {
   const prompt = await renderPrompt("fastPipelineTerm", {
     TERM: term,
+    SOURCE_LANGUAGE: sourceLang,
+    TARGET_LANGUAGE: targetLang,
+    PHONETIC_TYPE: mapPhoneticTypeToLabel(phoneticType),
     CHARACTER_STYLE_LABEL: mapCharacterStyleToLabel("tsundere"),
     CHARACTER_GENDER_LABEL: mapCharacterGenderToLabel("neutral"),
     DERE_RANK: 2,
@@ -133,11 +214,18 @@ export async function generateFastPipelineTerm(term) {
   const schema = {
     type: "object",
     properties: {
-      english: { type: "string" }, german: { type: "string" }, nuance: { type: "string" },
+      source_language: { type: "string" },
+      target_language: { type: "string" },
+      term: { type: "string" },
+      translation: { type: "string" },
+      phonetic: { type: "string" },
+      category: { type: "string" },
+      nuance: { type: "string" },
+      slang_nuance: { type: "string" },
       examples: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 5 },
-      category_suggestion: { type: "string" }
+      slang_examples: { type: "array", items: { type: "string" }, minItems: 0, maxItems: 3 }
     },
-    required: ["english", "german", "nuance", "examples", "category_suggestion"],
+    required: ["source_language", "target_language", "term", "translation", "phonetic", "category", "nuance", "examples"],
     additionalProperties: false
   };
   const json = await ollamaGenerateJson(prompt, schema);
