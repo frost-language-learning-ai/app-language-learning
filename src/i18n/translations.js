@@ -25,7 +25,7 @@ export const TRANSLATIONS = {
   llSettingsTitle: { jp: "設定", en: "Settings", de: "Einstellungen", es: "Configuración", fr: "Paramètres", it: "Impostazioni", pt: "Configurações", ko: "설정", zh: "设置", tw: "設定" },
   llSettingsSubtext: { jp: "表示と言語の設定を変更します。", en: "Change language and display settings.", de: "Sprache und Anzeigeeinstellungen ändern.", es: "Cambiar la configuración de idioma y pantalla.", fr: "Modifier les paramètres de langue et d'affichage.", it: "Modifica le impostazioni della lingua e del display.", pt: "Altere as configurações de idioma e exibição.", ko: "언어 및 표시 설정 변경", zh: "更改语言和显示设置。", tw: "更改語言和顯示設定。" },
   llLanguageLabel: { jp: "アプリ表示言語", en: "App Display Language", de: "App-Anzeigesprache", es: "Idioma de visualización de la aplicación", fr: "Langue d'affichage de l'application", it: "Lingua di visualizzazione dell'app", pt: "Idioma de exibição do aplicativo", ko: "앱 표시 언어", zh: "应用显示语言", tw: "應用程式顯示語言" },
-  llFastTitle: { jp: "高速パイプライン", en: "Fast Pipeline", de: "Schnell-Pipeline", es: "Pipeline rápida", fr: "Pipeline rapide", it: "Pipeline veloce", pt: "Pipeline rápida", ko: "빠른 파이프라인", zh: "快速管道", tw: "快速管道" },
+  llWordPrompt: { jp: "単語調査用プロンプト", en: "Word Check Prompt", de: "Worts", es: "Pipeline rápida", fr: "Pipeline rapide", it: "Pipeline veloce", pt: "Pipeline rápida", ko: "빠른 파이프라인", zh: "快速管道", tw: "快速管道" },
   llTermPlaceholder: { jp: "例: meet", en: "e.g. meet", de: "z. B. meet", es: "p. ej. meet", fr: "par ex. meet", it: "ad es. meet", pt: "ex. meet", ko: "예: meet", zh: "例如：meet", tw: "例如：meet" },
 
   llSourceLanguage: { jp: "貴方の言語", en: "Your Language", de: "Ihre Sprache", es: "Tu idioma", fr: "Votre langue", it: "La tua lingua", pt: "Seu idioma", ko: "귀하의 언어", zh: "您的语言", tw: "您的語言" },

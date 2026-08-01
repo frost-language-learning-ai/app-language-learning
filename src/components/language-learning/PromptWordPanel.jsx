@@ -120,9 +120,9 @@ export default function PromptWordPanel({
 
   return (
     <div>
-      <h3>{t.llFastTitle || "Word Prompt"}</h3>
+      <h3>{t.llWordPrompt || "Word Check Prompt"}</h3>
       <p style={{ marginTop: "4px", marginBottom: "16px", fontSize: "0.9em", color: "var(--ll-text-muted)", lineHeight: "1.4" }}>
-        {t.llWordLearningDesc || "Quickly learn and save new words. AI generates pronunciation, category, and examples for each term."}
+        {t.llWordLearningDesc || "Quickly learn and save a new word. AI generates pronunciation, category, and examples for it."}
       </p>
       
       {/* Error/Status Message at Top */}

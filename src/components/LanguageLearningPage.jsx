@@ -147,6 +147,7 @@ const PHONETIC_TYPES_BY_LANGUAGE = {
 export default function LanguageLearningPage({ locale, setLocale, t }) {
   const [globalError, setGlobalError] = useState("");
   const [activeTab, setActiveTab] = useState("workbench");
+  const [isLanguageSectionExpanded, setIsLanguageSectionExpanded] = useState(true);
   const [workbenchMode, setWorkbenchMode] = useState(() => 
     localStorage.getItem("settings.workbenchMode") || "word-learning"
   );
@@ -379,125 +380,153 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
 
       {/* Language Selection - Common across all modes */}
       <div className="ll-mode-selector" style={{ marginBottom: "20px" }}>
-        <h3 style={{ marginBottom: "12px", fontSize: "0.95em", fontWeight: 600 }}>
+        <button
+          onClick={() => setIsLanguageSectionExpanded(!isLanguageSectionExpanded)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "0",
+            marginBottom: "12px",
+            fontSize: "0.95em",
+            fontWeight: 600,
+            color: "inherit"
+          }}
+          aria-expanded={isLanguageSectionExpanded}
+        >
+          <span style={{
+            display: "inline-flex",
+            alignItems: "center",
+            transition: "transform 0.3s ease",
+            transform: isLanguageSectionExpanded ? "rotate(0deg)" : "rotate(-90deg)"
+          }}>▼</span>
           {t.llLanguageSettings || "Languages"}
-        </h3>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          gap: "8px",
-          alignItems: "flex-end"
-        }}>
-          {/* Source Language */}
-          <div>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
-              {t.llSourceLanguage || "Source Language"}
-            </label>
-            <select
-              value={sourceLanguage}
-              onChange={(e) => onChangeSourceLanguage(e.target.value)}
-              className="ll-select"
-              style={{ width: "100%" }}
+        </button>
+
+        {isLanguageSectionExpanded && (
+          <div style={{
+            animation: "slideDown 0.3s ease-out",
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            gap: "8px",
+            alignItems: "flex-end",
+            marginBottom: "12px"
+          }}>
+            {/* Source Language */}
+            <div>
+              <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
+                {t.llSourceLanguage || "Source Language"}
+              </label>
+              <select
+                value={sourceLanguage}
+                onChange={(e) => onChangeSourceLanguage(e.target.value)}
+                className="ll-select"
+                style={{ width: "100%" }}
+              >
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="ja">日本語</option>
+                <option value="es">Español</option>
+                <option value="it">Italiano</option>
+                <option value="fr">Français</option>
+                <option value="ru">Русский</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+                <option value="ko">한국어</option>
+                <option value="pt">Português</option>
+              </select>
+            </div>
+
+            {/* Swap Button */}
+            <button
+              onClick={() => {
+                const temp = sourceLanguage;
+                onChangeSourceLanguage(targetLanguage);
+                onChangeTargetLanguage(temp);
+              }}
+              className="ll-button"
+              title="Swap languages"
+              style={{ padding: "8px 12px", minWidth: "40px" }}
             >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="ja">日本語</option>
-              <option value="es">Español</option>
-              <option value="it">Italiano</option>
-              <option value="fr">Français</option>
-              <option value="ru">Русский</option>
-              <option value="ar">العربية</option>
-              <option value="zh">中文</option>
-              <option value="ko">한국어</option>
-              <option value="pt">Português</option>
-            </select>
+              ⇄
+            </button>
+
+            {/* Target Language */}
+            <div>
+              <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
+                {t.llTargetLanguage || "Target Language"}
+              </label>
+              <select
+                value={targetLanguage}
+                onChange={(e) => onChangeTargetLanguage(e.target.value)}
+                className="ll-select"
+                style={{ width: "100%" }}
+              >
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="ja">日本語</option>
+                <option value="es">Español</option>
+                <option value="it">Italiano</option>
+                <option value="fr">Français</option>
+                <option value="ru">Русский</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+                <option value="ko">한국어</option>
+                <option value="pt">Português</option>
+              </select>
+            </div>
           </div>
+        )}
 
-          {/* Swap Button */}
-          <button
-            onClick={() => {
-              const temp = sourceLanguage;
-              onChangeSourceLanguage(targetLanguage);
-              onChangeTargetLanguage(temp);
-            }}
-            className="ll-button"
-            title="Swap languages"
-            style={{ padding: "8px 12px", minWidth: "40px" }}
-          >
-            ⇄
-          </button>
+        {isLanguageSectionExpanded && (
+          <div style={{
+            animation: "slideDown 0.3s ease-out",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "8px",
+            marginBottom: "12px"
+          }}>
+            {/* Source Language Variant */}
+            <div>
+              <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
+                {t.llSourceVariant || "Source Variant"}
+              </label>
+              <select
+                value={sourceLanguageVariant}
+                onChange={(e) => onChangeSourceLanguageVariant(e.target.value)}
+                className="ll-select"
+                style={{ width: "100%" }}
+              >
+                {(LANGUAGE_VARIANTS[sourceLanguage] || []).map(variant => (
+                  <option key={variant.code} value={variant.code}>{variant.name}</option>
+                ))}
+              </select>
+            </div>
 
-          {/* Target Language */}
-          <div>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
-              {t.llTargetLanguage || "Target Language"}
-            </label>
-            <select
-              value={targetLanguage}
-              onChange={(e) => onChangeTargetLanguage(e.target.value)}
-              className="ll-select"
-              style={{ width: "100%" }}
-            >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="ja">日本語</option>
-              <option value="es">Español</option>
-              <option value="it">Italiano</option>
-              <option value="fr">Français</option>
-              <option value="ru">Русский</option>
-              <option value="ar">العربية</option>
-              <option value="zh">中文</option>
-              <option value="ko">한국어</option>
-              <option value="pt">Português</option>
-            </select>
+            {/* Target Language Variant */}
+            <div>
+              <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
+                {t.llTargetVariant || "Target Variant"}
+              </label>
+              <select
+                value={targetLanguageVariant}
+                onChange={(e) => onChangeTargetLanguageVariant(e.target.value)}
+                className="ll-select"
+                style={{ width: "100%" }}
+              >
+                {(LANGUAGE_VARIANTS[targetLanguage] || []).map(variant => (
+                  <option key={variant.code} value={variant.code}>{variant.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Language Variant Selection */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "8px",
-          marginBottom: "12px"
-        }}>
-          {/* Source Language Variant */}
-          <div>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
-              {t.llSourceVariant || "Source Variant"}
-            </label>
-            <select
-              value={sourceLanguageVariant}
-              onChange={(e) => onChangeSourceLanguageVariant(e.target.value)}
-              className="ll-select"
-              style={{ width: "100%" }}
-            >
-              {(LANGUAGE_VARIANTS[sourceLanguage] || []).map(variant => (
-                <option key={variant.code} value={variant.code}>{variant.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Target Language Variant */}
-          <div>
-            <label style={{ display: "block", marginBottom: "6px", fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
-              {t.llTargetVariant || "Target Variant"}
-            </label>
-            <select
-              value={targetLanguageVariant}
-              onChange={(e) => onChangeTargetLanguageVariant(e.target.value)}
-              className="ll-select"
-              style={{ width: "100%" }}
-            >
-              {(LANGUAGE_VARIANTS[targetLanguage] || []).map(variant => (
-                <option key={variant.code} value={variant.code}>{variant.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Phonetic Type Selection (for languages with regional variants) */}
-        {hasPhoneticTypes && (
-          <div className="ll-row" style={{ marginBottom: "12px" }}>
+        {isLanguageSectionExpanded && hasPhoneticTypes && (
+          <div className="ll-row" style={{ marginBottom: "12px", animation: "slideDown 0.3s ease-out" }}>
             <label style={{ marginRight: "8px", fontWeight: "500" }}>
               {t.llPhoneticType || "Pronunciation Accent:"}  
             </label>
@@ -521,6 +550,7 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
           <button className="ll-error-close" onClick={onCloseError}>Close</button>
         </div>
       )}
+
       <div id="tab-workbench" role="tabpanel" aria-labelledby="tab-workbench-btn" hidden={activeTab !== "workbench"}>
         {activeTab === "workbench" && (
           <div className="ll-card">
@@ -564,7 +594,7 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
               }}>
                 {workbenchMode === "word-learning" && (
                   <p style={{ margin: 0 }}>
-                    💡 {t.llWordLearningDesc || "Quickly learn and save new words. AI generates pronunciation, category, and examples for each term."}
+                    💡 {t.llWordLearningDesc || "Quickly learn and save a new word. AI generates pronunciation, category, and examples for it."}
                   </p>
                 )}
                 {workbenchMode === "reasoning" && (
