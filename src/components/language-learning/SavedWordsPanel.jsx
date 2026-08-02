@@ -28,6 +28,9 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState("all");
+  const [selectedTermIds, setSelectedTermIds] = useState(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const PAGE_SIZE_OPTIONS = [10, 20, 40, 50];
 
   useEffect(() => {
     async function loadLanguages() {
@@ -48,6 +51,7 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     setSelectedTargetLang(targetLanguage || "de");
     setSelectedCategory("all");
     setSelectedPartOfSpeech("all");
+    setSelectedTermIds(new Set());
   }, [sourceLanguage, targetLanguage]);
 
   useEffect(() => {
@@ -58,7 +62,7 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     setLoading(true);
     setMessage("");
     try {
-      const result = await languageApi.getCoreTerms(50, offset, selectedSourceLang, selectedTargetLang);
+      const result = await languageApi.getCoreTerms(pagination.limit, offset, selectedSourceLang, selectedTargetLang);
       setTerms(result.terms);
       setPagination(result.pagination);
     } catch (error) {
@@ -66,6 +70,26 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleChangePageSize(newSize) {
+    setPagination(prev => ({ ...prev, limit: newSize, offset: 0 }));
+    // Load terms after updating pagination
+    setLoading(true);
+    setMessage("");
+    setTimeout(() => {
+      languageApi.getCoreTerms(newSize, 0, selectedSourceLang, selectedTargetLang)
+        .then(result => {
+          setTerms(result.terms);
+          setPagination(result.pagination);
+        })
+        .catch(error => {
+          setMessage(`Failed to load terms: ${error.message}`);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, 0);
   }
 
   function handlePrevPage() {
@@ -76,6 +100,90 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
   function handleNextPage() {
     if (pagination.hasMore) {
       loadTerms(pagination.offset + pagination.limit);
+    }
+  }
+
+  function handleSelectTerm(termId) {
+    const newSelected = new Set(selectedTermIds);
+    if (newSelected.has(termId)) {
+      newSelected.delete(termId);
+    } else {
+      newSelected.add(termId);
+    }
+    setSelectedTermIds(newSelected);
+  }
+
+  function handleSelectAll() {
+    if (selectedTermIds.size === filteredTerms.length) {
+      setSelectedTermIds(new Set());
+    } else {
+      setSelectedTermIds(new Set(filteredTerms.map(t => t.id)));
+    }
+  }
+
+  async function handleDeleteSelected() {
+    if (selectedTermIds.size === 0) {
+      setMessage("削除する単語を選択してください");
+      return;
+    }
+
+    if (!confirm(`${selectedTermIds.size}個の単語を削除しますか？`)) {
+      return;
+    }
+
+    setDeleting(true);
+    setMessage("");
+    try {
+      for (const termId of selectedTermIds) {
+        await languageApi.deleteCoreTerm(termId);
+      }
+      setMessage(`${selectedTermIds.size}個の単語を削除しました`);
+      setSelectedTermIds(new Set());
+      loadTerms();
+    } catch (error) {
+      setMessage(`削除に失敗しました: ${error.message}`);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleDeleteTerm(termId) {
+    if (!confirm("この単語を削除しますか？")) {
+      return;
+    }
+
+    setDeleting(true);
+    setMessage("");
+    try {
+      await languageApi.deleteCoreTerm(termId);
+      setMessage("単語を削除しました");
+      setSelectedTermIds(new Set(Array.from(selectedTermIds).filter(id => id !== termId)));
+      loadTerms();
+    } catch (error) {
+      setMessage(`削除に失敗しました: ${error.message}`);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handlePinTerm(termId, currentPinned) {
+    try {
+      const result = await languageApi.updateCoreTerm(termId, { pinned: !currentPinned });
+      setTerms(terms.map(t => t.id === termId ? result.term : t));
+      setMessage(!currentPinned ? "Pin止めしました" : "Pin止めを解除しました");
+    } catch (error) {
+      setMessage(`操作に失敗しました: ${error.message}`);
+    }
+  }
+
+  async function handleSetPriority(termId, priority) {
+    try {
+      const result = await languageApi.updateCoreTerm(termId, { priority });
+      setTerms(terms.map(t => t.id === termId ? result.term : t));
+      const priorityLabels = ["設定なし", "低", "中", "高"];
+      setMessage(`優先度を${priorityLabels[priority]}に設定しました`);
+    } catch (error) {
+      setMessage(`操作に失敗しました: ${error.message}`);
     }
   }
 
@@ -164,6 +272,32 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
         </div>
       )}
 
+      {/* Page Size Selection */}
+      <div className="ll-row" style={{ marginBottom: "16px", gap: "8px", alignItems: "center" }}>
+        <label style={{ fontSize: "0.9em", fontWeight: 500, marginRight: "8px" }}>ページサイズ:</label>
+        {PAGE_SIZE_OPTIONS.map((size) => (
+          <button
+            key={size}
+            onClick={() => handleChangePageSize(size)}
+            className="ll-button"
+            style={{
+              padding: "6px 12px",
+              fontSize: "0.85em",
+              backgroundColor: pagination.limit === size ? "#1976d2" : "#f5f5f5",
+              color: pagination.limit === size ? "white" : "#333",
+              border: pagination.limit === size ? "1px solid #1976d2" : "1px solid #ddd",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: pagination.limit === size ? "bold" : "normal",
+              transition: "all 0.2s ease"
+            }}
+            disabled={loading}
+          >
+            {size}
+          </button>
+        ))}
+      </div>
+
       {/* Search Input */}
       <div className="ll-row" style={{ marginBottom: "16px" }}>
         <input
@@ -177,6 +311,33 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
           {loading ? (t.llLoading || "Loading...") : (t.llRefresh || "Refresh")}
         </button>
       </div>
+
+      {/* Bulk Actions */}
+      {filteredTerms.length > 0 && (
+        <div className="ll-row" style={{ marginBottom: "16px", gap: "8px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={selectedTermIds.size === filteredTerms.length && filteredTerms.length > 0}
+              onChange={handleSelectAll}
+              style={{ cursor: "pointer" }}
+            />
+            <span style={{ fontSize: "0.9em" }}>
+              すべて選択 ({selectedTermIds.size}/{filteredTerms.length})
+            </span>
+          </label>
+          {selectedTermIds.size > 0 && (
+            <button
+              onClick={handleDeleteSelected}
+              disabled={deleting}
+              className="ll-button"
+              style={{ backgroundColor: "#d32f2f", color: "white" }}
+            >
+              {deleting ? "削除中..." : `削除 (${selectedTermIds.size})`}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Terms Table */}
       {loading && terms.length === 0 ? (
@@ -193,18 +354,36 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
             <table className="ll-saved-terms-table">
               <thead>
                 <tr>
+                  <th style={{ width: "30px" }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTermIds.size === filteredTerms.length && filteredTerms.length > 0}
+                      onChange={handleSelectAll}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </th>
                   <th>{t.llTableHeaderSource || "Source"}</th>
                   <th>{t.llTableHeaderTarget || "Target"}</th>
                   <th>{t.llTableHeaderPhonetic || "Phonetic (UK)"}</th>
                   <th>品詞</th>
                   <th>カテゴリ</th>
+                  <th style={{ width: "60px" }}>Pin</th>
+                  <th style={{ width: "130px" }}>優先度</th>
                   <th>{t.llTableHeaderDate || "Date"}</th>
-                  <th style={{ textAlign: "center", width: "80px" }}>詳細</th>
+                  <th style={{ textAlign: "center", width: "100px" }}>操作</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTerms.map((term) => (
                   <tr key={term.id}>
+                    <td style={{ width: "30px", textAlign: "center" }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedTermIds.has(term.id)}
+                        onChange={() => handleSelectTerm(term.id)}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </td>
                     <td style={{ fontWeight: 500 }}>{term.term_en}</td>
                     <td style={{ fontWeight: 500 }}>{term.term_de}</td>
                     <td style={{ fontFamily: "monospace", color: "var(--ll-text-muted)" }}>
@@ -216,19 +395,88 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
                     <td style={{ fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
                       {term.details?.category || "—"}
                     </td>
+                    <td style={{ textAlign: "center", width: "60px" }}>
+                      <button
+                        onClick={() => handlePinTerm(term.id, term.pinned)}
+                        className="ll-button"
+                        title={term.pinned ? "Pin止めを解除" : "Pin止め"}
+                        style={{
+                          padding: "4px 8px",
+                          fontSize: "1em",
+                          backgroundColor: term.pinned ? "#ffa500" : "transparent",
+                          border: "1px solid #ddd",
+                          cursor: "pointer"
+                        }}
+                      >
+                        📌
+                      </button>
+                    </td>
+                    <td style={{ textAlign: "center", width: "130px", display: "flex", gap: "4px", justifyContent: "center", alignItems: "center" }}>
+                      <button
+                        onClick={() => handleSetPriority(term.id, 0)}
+                        title="優先度を解除"
+                        style={{
+                          padding: "4px 6px",
+                          fontSize: "0.75em",
+                          cursor: "pointer",
+                          borderRadius: "3px",
+                          border: "1px solid #ddd",
+                          backgroundColor: term.priority === 0 || !term.priority ? "#e0e0e0" : "#f5f5f5",
+                          color: "#333",
+                          fontWeight: term.priority === 0 || !term.priority ? "bold" : "normal"
+                        }}
+                      >
+                        —
+                      </button>
+                      {[1, 2, 3].map((priority) => (
+                        <button
+                          key={priority}
+                          onClick={() => handleSetPriority(term.id, priority)}
+                          title={["無し", "低", "中", "高"][priority]}
+                          style={{
+                            padding: "4px 8px",
+                            fontSize: "0.8em",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            borderRadius: "4px",
+                            border: "1px solid #ddd",
+                            backgroundColor: term.priority === priority ? (priority === 1 ? "#ffb74d" : priority === 2 ? "#ff9800" : "#d32f2f") : "#f5f5f5",
+                            color: term.priority === priority ? "white" : "#333",
+                            transition: "all 0.2s ease"
+                          }}
+                        >
+                          {["—", "低", "中", "高"][priority]}
+                        </button>
+                      ))}
+                    </td>
                     <td style={{ fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
                       {new Date(term.created_at).toLocaleDateString()}
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textAlign: "center", width: "100px" }}>
                       <button
                         onClick={() => {
                           setSelectedTerm(term);
                           setShowDetails(true);
                         }}
                         className="ll-button"
-                        style={{ padding: "4px 8px", fontSize: "0.85em" }}
+                        style={{ padding: "4px 8px", fontSize: "0.85em", marginRight: "4px" }}
                       >
                         詳細
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTerm(term.id)}
+                        disabled={deleting}
+                        className="ll-button"
+                        style={{
+                          padding: "4px 8px",
+                          fontSize: "0.85em",
+                          backgroundColor: "#d32f2f",
+                          color: "white",
+                          opacity: deleting ? 0.6 : 1
+                        }}
+                        title="削除"
+                      >
+                        ✕
                       </button>
                     </td>
                   </tr>

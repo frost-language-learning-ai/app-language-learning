@@ -142,6 +142,17 @@ export const languageApi = {
     return call(url, {
       method: "GET"
     });
+  },
+  deleteCoreTerm(termId) {
+    return call(`/core-terms/${termId}`, {
+      method: "DELETE"
+    });
+  },
+  updateCoreTerm(termId, updates) {
+    return call(`/core-terms/${termId}`, {
+      method: "PATCH",
+      body: JSON.stringify(updates)
+    });
   }
 };
 

@@ -131,7 +131,7 @@ languageRoutes.get("/core-terms", asyncHandler(async (req, res) => {
   const sourceLang = req.query.sourceLang;
   const targetLang = req.query.targetLang;
 
-  let query = `SELECT id, term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details, created_at
+  let query = `SELECT id, term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details, pinned, priority, created_at
                FROM core_terms`;
   let countQuery = `SELECT COUNT(*) as total FROM core_terms`;
   const params = [];
@@ -153,7 +153,7 @@ languageRoutes.get("/core-terms", asyncHandler(async (req, res) => {
     countQuery += whereClause;
   }
 
-  query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  query += ` ORDER BY pinned DESC, priority DESC, created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
   params.push(limit, offset);
 
   const result = await pool.query(query, params);
@@ -177,6 +177,63 @@ languageRoutes.get("/core-terms", asyncHandler(async (req, res) => {
       hasMore: offset + limit < total
     }
   });
+}));
+
+languageRoutes.delete("/core-terms/:id", asyncHandler(async (req, res) => {
+  const termId = parseInt(req.params.id, 10);
+  if (isNaN(termId)) {
+    throw new AppError("Invalid term ID", { status: 400, code: "INVALID_ID" });
+  }
+
+  await assertTermExists(termId);
+
+  await pool.query("DELETE FROM core_terms WHERE id = $1", [termId]);
+
+  res.json({ ok: true, message: "Term deleted successfully", id: termId });
+}));
+
+languageRoutes.patch("/core-terms/:id", asyncHandler(async (req, res) => {
+  const termId = parseInt(req.params.id, 10);
+  if (isNaN(termId)) {
+    throw new AppError("Invalid term ID", { status: 400, code: "INVALID_ID" });
+  }
+
+  await assertTermExists(termId);
+
+  const { pinned, priority } = req.body;
+  const updates = [];
+  const params = [];
+
+  if (typeof pinned === 'boolean') {
+    updates.push("pinned = ?");
+    params.push(pinned ? 1 : 0);
+  }
+
+  if (typeof priority === 'number' && priority >= 0 && priority <= 3) {
+    updates.push("priority = ?");
+    params.push(priority);
+  }
+
+  if (updates.length === 0) {
+    throw new AppError("No valid fields to update", { status: 400, code: "NO_UPDATES" });
+  }
+
+  params.push(termId);
+
+  const query = `UPDATE core_terms SET ${updates.join(", ")} WHERE id = ? RETURNING id, term_en, term_de, ipa_uk, source_lang, target_lang, part_of_speech, details, pinned, priority, created_at`;
+
+  const result = await pool.query(query, params);
+
+  if (!result.rows[0]) {
+    throw new AppError("Term not found", { status: 404, code: "TERM_NOT_FOUND" });
+  }
+
+  const term = result.rows[0];
+  if (term.details && typeof term.details === 'string') {
+    term.details = JSON.parse(term.details);
+  }
+
+  res.json({ ok: true, term });
 }));
 
 languageRoutes.post("/knowledge-nodes", asyncHandler(async (req, res) => {

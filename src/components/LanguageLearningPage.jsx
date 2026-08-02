@@ -219,6 +219,14 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
   useEffect(() => {
     const htmlLang = (locale || "en").toLowerCase().startsWith("ja") ? "ja" : (locale || "en").slice(0, 2);
     document.documentElement.lang = htmlLang;
+    
+    // Log loaded language settings on app initialization
+    const savedSourceLang = localStorage.getItem("settings.sourceLanguage");
+    const savedTargetLang = localStorage.getItem("settings.targetLanguage");
+    console.log("Language settings loaded from localStorage:", {
+      sourceLanguage: savedSourceLang || "en (default)",
+      targetLanguage: savedTargetLang || "de (default)"
+    });
   }, [locale]);
 
   function onChangeLocale(nextLocale) {
@@ -228,22 +236,40 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
 
   function onChangeSourceLanguage(lang) {
     setSourceLanguage(lang);
-    localStorage.setItem("settings.sourceLanguage", lang);
+    try {
+      localStorage.setItem("settings.sourceLanguage", lang);
+      console.log("Saved source language to localStorage:", lang);
+    } catch (error) {
+      console.warn("Failed to save source language to localStorage:", error);
+    }
     // Set default variant for the selected language
     const variants = LANGUAGE_VARIANTS[lang] || [];
     const defaultVariant = variants.length > 0 ? variants[0].code : `${lang}-default`;
     setSourceLanguageVariant(defaultVariant);
-    localStorage.setItem("settings.sourceLanguageVariant", defaultVariant);
+    try {
+      localStorage.setItem("settings.sourceLanguageVariant", defaultVariant);
+    } catch (error) {
+      console.warn("Failed to save source language variant to localStorage:", error);
+    }
   }
 
   function onChangeTargetLanguage(lang) {
     setTargetLanguage(lang);
-    localStorage.setItem("settings.targetLanguage", lang);
+    try {
+      localStorage.setItem("settings.targetLanguage", lang);
+      console.log("Saved target language to localStorage:", lang);
+    } catch (error) {
+      console.warn("Failed to save target language to localStorage:", error);
+    }
     // Set default variant for the selected language
     const variants = LANGUAGE_VARIANTS[lang] || [];
     const defaultVariant = variants.length > 0 ? variants[0].code : `${lang}-default`;
     setTargetLanguageVariant(defaultVariant);
-    localStorage.setItem("settings.targetLanguageVariant", defaultVariant);
+    try {
+      localStorage.setItem("settings.targetLanguageVariant", defaultVariant);
+    } catch (error) {
+      console.warn("Failed to save target language variant to localStorage:", error);
+    }
   }
 
   function onChangeSourceLanguageVariant(variant) {

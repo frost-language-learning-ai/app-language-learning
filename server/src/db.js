@@ -45,6 +45,8 @@ function initializeSchema() {
       target_lang TEXT NOT NULL DEFAULT 'de',
       part_of_speech TEXT,
       details TEXT,
+      pinned INTEGER NOT NULL DEFAULT 0,
+      priority INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       UNIQUE(term_en, term_de, source_lang, target_lang)
     );
@@ -101,8 +103,31 @@ function initializeSchema() {
   }
 }
 
+// Migration function to add new columns if they don't exist
+function migrateSchema() {
+  try {
+    // Check if pinned column exists, if not add it
+    const tableInfo = db.prepare("PRAGMA table_info(core_terms)").all();
+    const columnNames = tableInfo.map(col => col.name);
+    
+    if (!columnNames.includes('pinned')) {
+      db.exec("ALTER TABLE core_terms ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0");
+      console.log('✅ Added pinned column to core_terms');
+    }
+    
+    if (!columnNames.includes('priority')) {
+      db.exec("ALTER TABLE core_terms ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
+      console.log('✅ Added priority column to core_terms');
+    }
+  } catch (error) {
+    console.error('❌ Migration error:', error.message);
+    // Don't throw - column might already exist from previous run
+  }
+}
+
 // Initialize on startup
 initializeSchema();
+migrateSchema();
 
 // PostgreSQL-compatible pool interface
 export const pool = {
