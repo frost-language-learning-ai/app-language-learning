@@ -32,7 +32,7 @@
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.0",
     "@capacitor/android": "^8.4.2",
-    "@capacitor/core": "^8.3.3",
+    "@capacitor/core": "^8.5.0",
     "@huggingface/transformers": "^4.2.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
