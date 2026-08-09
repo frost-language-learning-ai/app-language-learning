@@ -6,6 +6,7 @@ import AudioIntelligencePanel from "./language-learning/AudioIntelligencePanel.j
 import SettingsPanel from "./language-learning/SettingsPanel.jsx";
 import AiSetupPanel from "./language-learning/AiSetupPanel.jsx";
 import SavedWordsPanel from "./language-learning/SavedWordsPanel.jsx";
+import FlashCardPanel from "./language-learning/FlashCardPanel.jsx";
 import "../css/language-learning.css";
 
 // Language variants (regional dialects and varieties)
@@ -402,6 +403,16 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         >
           {t.llTabAiSetup || "AI Setup"}
         </button>
+        
+        <button
+          className={`ll-button ${activeTab === "flashcard" ? "ll-button-primary" : ""}`}
+          onClick={() => setActiveTab("flashcard")}
+          role="tab"
+          aria-selected={activeTab === "flashcard"}
+          aria-controls="tab-flashcard"
+        >
+          {t.llTabFlashCard || "Flash Card"}
+        </button>
       </div>
 
       {/* Language Selection - Common across all modes */}
@@ -734,6 +745,18 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
       {/* Ollama, Model Setup */}
       <div id="tab-ai-setup" role="tabpanel" aria-labelledby="tab-ai-setup-btn" hidden={activeTab !== "ai-setup"}>
         {activeTab === "ai-setup" && <AiSetupPanel t={t} />}
+      </div>
+
+      {/* Flash Card Practice */}
+      <div id="tab-flashcard" role="tabpanel" aria-labelledby="tab-flashcard-btn" hidden={activeTab !== "flashcard"}>
+        {activeTab === "flashcard" && (
+          <FlashCardPanel 
+            sourceLanguage={sourceLanguage}
+            targetLanguage={targetLanguage}
+            onError={handleError}
+            t={t}
+          />
+        )}
       </div>
     </main>
   );

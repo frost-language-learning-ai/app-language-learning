@@ -100,8 +100,37 @@ export const TRANSLATIONS = {
   llSaved: { jp: "保存しました。", en: "Saved.", de: "Gespeichert.", es: "Guardado.", fr: "Enregistré.", it: "Salvato.", pt: "Salvo.", ko: "저장되었습니다.", zh: "已保存。", tw: "已保存。" },
   llErrorPrefix: { jp: "エラー", en: "Error", de: "Fehler", es: "Error", fr: "Erreur", it: "Errore", pt: "Erro", ko: "오류", zh: "错误", tw: "錯誤" },
   llRequestIdLabel: { jp: "リクエストID", en: "Request ID", de: "Anfrage-ID", es: "ID de solicitud", fr: "ID de demande", it: "ID richiesta", pt: "ID de solicitação", ko: "요청 ID", zh: "请求ID", tw: "請求ID" },
-  llUnknownError: { jp: "予期しないエラーが発生しました。", en: "An unexpected error occurred.", de: "Ein unerwarteter Fehler ist aufgetreten.", es: "Ocurrió un error inesperado.", fr: "Une erreur inattendue s'est produite.", it: "Si è verificato un errore imprevisto.", pt: "Ocorreu um erro inesperado.", ko: "예기치 않은 오류가 발생했습니다.", zh: "发生了意外错误。", tw: "發生了意外錯誤。" }
-};
+  llUnknownError: { jp: "予期しないエラーが発生しました。", en: "An unexpected error occurred.", de: "Ein unerwarteter Fehler ist aufgetreten.", es: "Ocurrió un error inesperado.", fr: "Une erreur inattendue s'est produite.", it: "Si è verificato un errore imprevisto.", pt: "Ocorreu um erro inesperado.", ko: "예기치 않은 오류가 발생했습니다.", zh: "发生了意外错误。", tw: "發生了意外錯誤。" },
+
+  // FlashCard Panel
+  llTabFlashCard: { jp: "フラッシュカード", en: "Flash Card", de: "Lernkarte", es: "Tarjeta didáctica", fr: "Carte mémoire", it: "Scheda didattica", pt: "Cartão didático", ko: "플래시카드", zh: "抽认卡", tw: "抽認卡" },
+  llFlashCard: { jp: "フラッシュカード", en: "Flash Card Practice", de: "Lernkartentraining", es: "Práctica de tarjetas didácticas", fr: "Pratique des cartes mémoire", it: "Esercizio con schede didattiche", pt: "Prática de cartão didático", ko: "플래시카드 연습", zh: "抽认卡练习", tw: "抽認卡練習" },
+  llFlashCardDesc: { jp: "単語を見て、クリックして答えを表示。正解または不正解をマークします。", en: "Practice vocabulary with interactive flash cards. Click to reveal the answer and mark as correct or skip.", de: "Üben Sie Wortschatz mit interaktiven Lernkarten. Klicken Sie, um die Antwort anzuzeigen und als richtig zu markieren oder überspringen Sie.", es: "Practique vocabulario con tarjetas didácticas interactivas. Haga clic para revelar la respuesta y marque como correcta o omita.", fr: "Pratiquez le vocabulaire avec des cartes mémoire interactives. Cliquez pour révéler la réponse et marquez comme correct ou ignorez.", it: "Esercitati con le schede didattiche interattive. Fai clic per rivelare la risposta e contrassegnala come corretta o salta.", pt: "Pratique vocabulário com cartões didáticos interativos. Clique para revelar a resposta e marque como correto ou pule.", ko: "대화형 플래시카드로 어휘를 연습하세요. 클릭하여 답을 표시하고 정답 또는 건너뛰기로 표시합니다.", zh: "使用交互式抽认卡练习词汇。单击以显示答案，并标记为正确或跳过。", tw: "使用互動式抽認卡練習詞彙。點擊以顯示答案，並標記為正確或跳過。" },
+  llFilterMode: { jp: "フィルターモード", en: "Filter Mode", de: "Filtermodus", es: "Modo de filtro", fr: "Mode filtre", it: "Modalità filtro", pt: "Modo de filtro", ko: "필터 모드", zh: "筛选模式", tw: "篩選模式" },
+  llRandom: { jp: "ランダム", en: "Random", de: "Zufällig", es: "Aleatorio", fr: "Aléatoire", it: "Casuale", pt: "Aleatório", ko: "랜덤", zh: "随机", tw: "隨機" },
+  llCategory: { jp: "カテゴリ", en: "Category", de: "Kategorie", es: "Categoría", fr: "Catégorie", it: "Categoria", pt: "Categoria", ko: "카테고리", zh: "类别", tw: "類別" },
+  llPriority: { jp: "優先度", en: "Priority", de: "Priorität", es: "Prioridad", fr: "Priorité", it: "Priorità", pt: "Prioridade", ko: "우선순위", zh: "优先级", tw: "優先級" },
+  llSelectCategory: { jp: "カテゴリを選択", en: "Select Category", de: "Kategorie auswählen", es: "Seleccionar categoría", fr: "Sélectionner une catégorie", it: "Seleziona categoria", pt: "Selecionar categoria", ko: "카테고리 선택", zh: "选择类别", tw: "選擇類別" },
+  llAllCategories: { jp: "すべてのカテゴリ", en: "All Categories", de: "Alle Kategorien", es: "Todas las categorías", fr: "Toutes les catégories", it: "Tutte le categorie", pt: "Todas as categorias", ko: "모든 카테고리", zh: "所有类别", tw: "所有類別" },
+  llSelectPriority: { jp: "優先度を選択", en: "Select Priority", de: "Priorität auswählen", es: "Seleccionar prioridad", fr: "Sélectionner la priorité", it: "Seleziona priorità", pt: "Selecionar prioridade", ko: "우선순위 선택", zh: "选择优先级", tw: "選擇優先級" },
+  llStartPractice: { jp: "練習開始", en: "Start Practice", de: "Trainieren starten", es: "Comenzar práctica", fr: "Commencer la pratique", it: "Inizia pratica", pt: "Iniciar prática", ko: "연습 시작", zh: "开始练习", tw: "開始練習" },
+  llProgress: { jp: "進捗", en: "Progress", de: "Fortschritt", es: "Progreso", fr: "Progrès", it: "Progresso", pt: "Progresso", ko: "진행 상황", zh: "进度", tw: "進度" },
+  llClickToFlip: { jp: "クリックで反転", en: "Click to flip", de: "Zum Umblättern klicken", es: "Haga clic para voltear", fr: "Cliquez pour retourner", it: "Clicca per capovolgere", pt: "Clique para virar", ko: "클릭하여 뒤집기", zh: "点击翻转", tw: "點擊翻轉" },
+  llPrevious: { jp: "← 前へ", en: "← Previous", de: "← Zurück", es: "← Anterior", fr: "← Précédent", it: "← Precedente", pt: "← Anterior", ko: "← 이전", zh: "← 上一个", tw: "← 上一個" },
+  llNext: { jp: "次へ →", en: "Next →", de: "Weiter →", es: "Siguiente →", fr: "Suivant →", it: "Avanti →", pt: "Próximo →", ko: "다음 →", zh: "下一个 →", tw: "下一個 →" },
+  llShuffle: { jp: "🔀 シャッフル", en: "🔀 Shuffle", de: "🔀 Mischen", es: "🔀 Mezclar", fr: "🔀 Mélanger", it: "🔀 Mescola", pt: "🔀 Embaralhar", ko: "🔀 섞기", zh: "🔀 洗牌", tw: "🔀 洗牌" },
+  llReset: { jp: "⟲ リセット", en: "⟲ Reset", de: "⟲ Zurücksetzen", es: "⟲ Restablecer", fr: "⟲ Réinitialiser", it: "⟲ Ripristina", pt: "⟲ Redefinir", ko: "⟲ 재설정", zh: "⟲ 重置", tw: "⟲ 重置" },
+  llCorrect: { jp: "✓ 正解", en: "✓ Correct", de: "✓ Richtig", es: "✓ Correcto", fr: "✓ Correct", it: "✓ Corretto", pt: "✓ Correto", ko: "✓ 정답", zh: "✓ 正确", tw: "✓ 正確" },
+  llSkip: { jp: "- スキップ", en: "- Skip", de: "- Überspringen", es: "- Omitir", fr: "- Passer", it: "- Salta", pt: "- Pular", ko: "- 건너뛰기", zh: "- 跳过", tw: "- 跳過" },
+  llLoading: { jp: "読み込み中...", en: "Loading...", de: "Wird geladen...", es: "Cargando...", fr: "Chargement...", it: "Caricamento...", pt: "Carregando...", ko: "로딩 중...", zh: "加载中...", tw: "加載中..." },
+  llNoTermsAvailable: { jp: "利用可能な単語がありません。", en: "No terms available for learning", de: "Keine Begriffe verfügbar", es: "No hay términos disponibles", fr: "Aucun terme disponible", it: "Nessun termine disponibile", pt: "Nenhum termo disponível", ko: "사용 가능한 용어 없음", zh: "没有可用的术语", tw: "沒有可用的術語" },
+
+  // Comprehension Level
+  llComprehensionLevel: { jp: "この単語の理解度は？", en: "How well did you understand this word?", de: "Wie gut haben Sie dieses Wort verstanden?", es: "¿Qué tan bien entendiste esta palabra?", fr: "Avez-vous bien compris ce mot?", it: "Quanto bene hai capito questa parola?", pt: "Quão bem você entendeu esta palavra?", ko: "이 단어를 얼마나 잘 이해했습니까?", zh: "您对这个词的理解程度如何？", tw: "您對這個詞的理解程度如何？" },
+  llComprehensionLow: { jp: "低 (Low)", en: "Low", de: "Niedrig", es: "Bajo", fr: "Bas", it: "Basso", pt: "Baixo", ko: "낮음", zh: "低", tw: "低" },
+  llComprehensionMedium: { jp: "中 (Medium)", en: "Medium", de: "Mittel", es: "Medio", fr: "Moyen", it: "Medio", pt: "Médio", ko: "중간", zh: "中", tw: "中" },
+  llComprehensionHigh: { jp: "高 (High)", en: "High", de: "Hoch", es: "Alto", fr: "Haut", it: "Alto", pt: "Alto", ko: "높음", zh: "高", tw: "高" }
+}
 
 export function getCategoryName(id, locale = 'jp') {
   if (!id) return '';

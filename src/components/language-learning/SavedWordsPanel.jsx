@@ -28,8 +28,10 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedPartOfSpeech, setSelectedPartOfSpeech] = useState("all");
+  const [selectedComprehensionLevel, setSelectedComprehensionLevel] = useState("all");
   const [selectedTermIds, setSelectedTermIds] = useState(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [updatingComprehension, setUpdatingComprehension] = useState(null);
   const PAGE_SIZE_OPTIONS = [10, 20, 40, 50];
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     setSelectedTargetLang(targetLanguage || "de");
     setSelectedCategory("all");
     setSelectedPartOfSpeech("all");
+    setSelectedComprehensionLevel("all");
     setSelectedTermIds(new Set());
   }, [sourceLanguage, targetLanguage]);
 
@@ -187,6 +190,20 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     }
   }
 
+  async function handleSetComprehensionLevel(termId, level) {
+    setUpdatingComprehension(termId);
+    try {
+      const result = await languageApi.updateCoreTerm(termId, { comprehension_level: level });
+      setTerms(terms.map(t => t.id === termId ? result.term : t));
+      const levelLabels = ["未設定", "低", "中", "高"];
+      setMessage(`理解度を${levelLabels[level]}に設定しました`);
+    } catch (error) {
+      setMessage(`操作に失敗しました: ${error.message}`);
+    } finally {
+      setUpdatingComprehension(null);
+    }
+  }
+
   const filteredTerms = terms.filter((term) => {
     // Filter by search query
     const matchesSearch = !searchQuery.trim() || (
@@ -202,7 +219,11 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
     const matchesPartOfSpeech = selectedPartOfSpeech === "all" || 
       (term.part_of_speech && term.part_of_speech === selectedPartOfSpeech);
 
-    return matchesSearch && matchesCategory && matchesPartOfSpeech;
+    // Filter by comprehension level
+    const matchesComprehensionLevel = selectedComprehensionLevel === "all" || 
+      (String(term.comprehension_level || 0) === selectedComprehensionLevel);
+
+    return matchesSearch && matchesCategory && matchesPartOfSpeech && matchesComprehensionLevel;
   });
 
   // Extract unique categories from terms
@@ -271,6 +292,22 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
           </select>
         </div>
       )}
+
+      {/* Comprehension Level Filter */}
+      <div className="ll-row" style={{ marginBottom: "16px" }}>
+        <select
+          value={selectedComprehensionLevel}
+          onChange={(e) => setSelectedComprehensionLevel(e.target.value)}
+          className="ll-select"
+          style={{ flex: 1, maxWidth: "300px" }}
+        >
+          <option value="all">すべての理解度</option>
+          <option value="0">{t?.llComprehensionLow || "未設定"}</option>
+          <option value="1">{t?.llComprehensionLow || "低"}</option>
+          <option value="2">{t?.llComprehensionMedium || "中"}</option>
+          <option value="3">{t?.llComprehensionHigh || "高"}</option>
+        </select>
+      </div>
 
       {/* Page Size Selection */}
       <div className="ll-row" style={{ marginBottom: "16px", gap: "8px", alignItems: "center" }}>
@@ -367,6 +404,7 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
                   <th>{t.llTableHeaderPhonetic || "Phonetic (UK)"}</th>
                   <th>品詞</th>
                   <th>カテゴリ</th>
+                  <th style={{ width: "90px" }}>理解度</th>
                   <th style={{ width: "60px" }}>Pin</th>
                   <th style={{ width: "130px" }}>優先度</th>
                   <th>{t.llTableHeaderDate || "Date"}</th>
@@ -394,6 +432,30 @@ export default function SavedWordsPanel({ t, sourceLanguage, targetLanguage, sou
                     </td>
                     <td style={{ fontSize: "0.9em", color: "var(--ll-text-muted)" }}>
                       {term.details?.category || "—"}
+                    </td>
+                    <td style={{ textAlign: "center", width: "90px", display: "flex", gap: "3px", justifyContent: "center", alignItems: "center" }}>
+                      {[0, 1, 2, 3].map((level) => (
+                        <button
+                          key={level}
+                          onClick={() => handleSetComprehensionLevel(term.id, level)}
+                          disabled={updatingComprehension === term.id}
+                          title={["未設定", "低", "中", "高"][level]}
+                          style={{
+                            padding: "3px 6px",
+                            fontSize: "0.7em",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            borderRadius: "3px",
+                            border: "1px solid #ddd",
+                            backgroundColor: (term.comprehension_level || 0) === level ? (level === 0 ? "#e0e0e0" : level === 1 ? "#ffb74d" : level === 2 ? "#ff9800" : "#4caf50") : "#f5f5f5",
+                            color: (term.comprehension_level || 0) === level && level !== 0 ? "white" : "#333",
+                            opacity: updatingComprehension === term.id ? 0.6 : 1,
+                            transition: "all 0.2s ease"
+                          }}
+                        >
+                          {["—", "低", "中", "高"][level]}
+                        </button>
+                      ))}
                     </td>
                     <td style={{ textAlign: "center", width: "60px" }}>
                       <button
