@@ -1,6 +1,7 @@
 **/node_modules/
 **/release/
 **/dist/
+**/data/
 
 # ビルド成果物
 *.exe
