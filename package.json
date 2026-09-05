@@ -50,7 +50,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.0",
+    "@capacitor/cli": "^8.5.1",
     "@electron/rebuild": "^4.0.4",
     "@vitejs/plugin-react": "^6.1.0",
     "concurrently": "^10.0.5",
