@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const OLLAMA_TIMEOUT_MS = 30000;
+const OLLAMA_TIMEOUT_MS = 120000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OLLAMA_PROMPTS_PATH = path.resolve(__dirname, "../prompts/ollama-prompts.json");
 
@@ -83,9 +83,18 @@ async function requestOllama(pathname, body, timeoutMs) {
   } catch (error) {
     timeout.clear();
     if (error?.name === "AbortError") {
-      throw new AppError("Ollama request timed out", { status: 504, code: "UPSTREAM_TIMEOUT" });
+      throw new AppError("Ollama request timed out. The local model may still be loading.", {
+        status: 504,
+        code: "UPSTREAM_TIMEOUT",
+        expose: true
+      });
     }
-    throw new AppError("Ollama request failed", { status: 502, code: "UPSTREAM_UNAVAILABLE", cause: error });
+    throw new AppError("Ollama is unavailable. Check that Ollama is running.", {
+      status: 502,
+      code: "UPSTREAM_UNAVAILABLE",
+      expose: true,
+      cause: error
+    });
   }
   timeout.clear();
 
@@ -94,6 +103,7 @@ async function requestOllama(pathname, body, timeoutMs) {
     throw new AppError("Ollama request failed", {
       status: 502,
       code: "UPSTREAM_BAD_RESPONSE",
+      expose: true,
       details: { status: response.status, body: text.slice(0, 500) }
     });
   }

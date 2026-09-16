@@ -1,7 +1,7 @@
 export const TRANSLATIONS = {
   llTitle: { jp: "語学学習用アプリ", en: "Language Learning App", de: "Sprachlern-App", es: "Banco de trabajo de aprendizaje de idiomas", fr: "Banc d'apprentissage des langues", it: "Banco di apprendimento linguistico", pt: "Bancada de Aprendizagem de Idiomas", ko: "언어 학습 작업대", zh: "语言学习工作台", tw: "語言學習工作台" },
 
-  llTabWorkbench: { jp: "学習", en: "Workbench", de: "Workbench", es: "Banco de trabajo", fr: "Banc d'essai", it: "Banchina di lavoro", pt: "Bancada de trabalho", ko: "작업대", zh: "工作台", tw: "工作台" },
+  llTabWorkbench: { jp: "AI質問", en: "AI Q&A", de: "KI-Fragen", es: "Preguntas a la IA", fr: "Questions à l'IA", it: "Domande all'IA", pt: "Perguntas à IA", ko: "AI 질문", zh: "AI 问答", tw: "AI 問答" },
   llTabAudio: { jp: "発音練習", en: "Pronunciation Practice", de: "Ausspracheübung", es: "Práctica de pronunciación", fr: "Pratique de la prononciation", it: "Esercizio di pronuncia", pt: "Prática de pronúncia", ko: "발음 연습", zh: "发音练习", tw: "發音練習" },
   llTabSettings: { jp: "設定", en: "Settings", de: "Einstellungen", es: "Configuración", fr: "Paramètres", it: "Impostazioni", pt: "Configurações", ko: "설정", zh: "设置", tw: "設定" },
   llTabAiSetup: { jp: "AI セットアップ", en: "AI Setup", de: "KI-Einrichtung", es: "Configuración de IA", fr: "Configuration de l'IA", it: "Configurazione AI", pt: "Configuração de IA", ko: "AI 설정", zh: "AI 设置", tw: "AI 設定" },

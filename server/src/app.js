@@ -7,6 +7,31 @@ import { httpLogger, logger } from "./logger.js";
 import "./db.js"; // Ensure database is initialized on app startup
 
 const app = express();
+
+const localOrigins = new Set([
+  "http://localhost:5173",
+  "http://tauri.localhost",
+  "https://tauri.localhost",
+  "tauri://localhost"
+]);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && localOrigins.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+
+  next();
+});
+
 app.use(httpLogger);
 app.use((req, _res, next) => {
   req.requestId = req.id;

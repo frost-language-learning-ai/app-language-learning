@@ -2,6 +2,8 @@
 **/release/
 **/dist/
 **/data/
+**/src-tauri/target/
+**/src-tauri/gen/
 
 # ビルド成果物
 *.exe
@@ -26,6 +28,7 @@ android/app/build/
 *.db
 *.sqlite
 *.sqlite3
+**/data/
 
 # 環境変数・シークレット
 .env

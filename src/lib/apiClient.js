@@ -33,7 +33,7 @@ async function call(path, options = {}) {
     if (error?.name === "AbortError") {
       throw new ApiClientError("Request timed out", { code: "REQUEST_TIMEOUT", retryable: true });
     }
-    throw new ApiClientError("Network error. Check your connection.", {
+    throw new ApiClientError("API error. Check that the local API server is running.", {
       code: "NETWORK_ERROR",
       retryable: true
     });
