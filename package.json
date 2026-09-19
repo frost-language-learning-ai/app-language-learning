@@ -31,7 +31,7 @@
   "license": "ISC",
   "dependencies": {
     "@capacitor-community/sqlite": "^8.1.1",
-    "@capacitor/android": "^8.5.1",
+    "@capacitor/android": "^8.5.2",
     "@capacitor/core": "^8.5.2",
     "@huggingface/transformers": "^4.3.0",
     "ajv": "^8.17.1",
