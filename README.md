@@ -82,14 +82,13 @@ npm run dist:win         # Tauri Windows installer build
 - Gemma: Google's open source, completely free
 - All local processing (zero cloud costs)
 
-## License
+## **License**
 
 Free for personal and commercial use.
 However, you need to contact the author and developer for commercial use.
 
-Please see the [LICENSE](LICENSE) file for more details.
 
-### Support
+### **Support**
 
 If you find this app useful, please consider supporting its development. 
 Your support helps maintain and improve the app.
