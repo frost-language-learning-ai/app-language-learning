@@ -119,6 +119,16 @@ function migrateSchema() {
       db.exec("ALTER TABLE core_terms ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
       console.log('✅ Added priority column to core_terms');
     }
+
+    if (!columnNames.includes('part_of_speech')) {
+      db.exec("ALTER TABLE core_terms ADD COLUMN part_of_speech TEXT");
+      console.log('✅ Added part_of_speech column to core_terms');
+    }
+
+    if (!columnNames.includes('details')) {
+      db.exec("ALTER TABLE core_terms ADD COLUMN details TEXT");
+      console.log('✅ Added details column to core_terms');
+    }
   } catch (error) {
     console.error('❌ Migration error:', error.message);
     // Don't throw - column might already exist from previous run

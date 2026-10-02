@@ -361,7 +361,7 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
           aria-selected={activeTab === "workbench"}
           aria-controls="tab-workbench"
         >
-          {t.llTabWorkbench || "Workbench"}
+          {t.llTabWorkbench || "AI Q&A"}
         </button>
 
         <button
@@ -375,16 +375,6 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         </button>
 
         <button
-          className={`ll-button ${activeTab === "settings" ? "ll-button-primary" : ""}`}
-          onClick={() => setActiveTab("settings")}
-          role="tab"
-          aria-selected={activeTab === "settings"}
-          aria-controls="tab-settings"
-        >
-          {t.llTabSettings || "Settings"}
-        </button>
-        
-        <button
           className={`ll-button ${activeTab === "saved-terms" ? "ll-button-primary" : ""}`}
           onClick={() => setActiveTab("saved-terms")}
           role="tab"
@@ -393,6 +383,26 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         >
           {t.llTabSavedWords || "Saved Words"}
         </button>
+
+        <button
+          className={`ll-button ${activeTab === "flashcard" ? "ll-button-primary" : ""}`}
+          onClick={() => setActiveTab("flashcard")}
+          role="tab"
+          aria-selected={activeTab === "flashcard"}
+          aria-controls="tab-flashcard"
+        >
+          {t.llTabFlashCard || "Flash Card"}
+        </button>
+
+        <button
+          className={`ll-button ${activeTab === "settings" ? "ll-button-primary" : ""}`}
+          onClick={() => setActiveTab("settings")}
+          role="tab"
+          aria-selected={activeTab === "settings"}
+          aria-controls="tab-settings"
+        >
+          {t.llTabSettings || "Settings"}
+        </button>      
         
         <button
           className={`ll-button ${activeTab === "ai-setup" ? "ll-button-primary" : ""}`}
@@ -403,17 +413,7 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         >
           {t.llTabAiSetup || "AI Setup"}
         </button>
-        
-        <button
-          className={`ll-button ${activeTab === "flashcard" ? "ll-button-primary" : ""}`}
-          onClick={() => setActiveTab("flashcard")}
-          role="tab"
-          aria-selected={activeTab === "flashcard"}
-          aria-controls="tab-flashcard"
-        >
-          {t.llTabFlashCard || "Flash Card"}
-        </button>
-      </div>
+      </div>      
 
       {/* Language Selection - Common across all modes */}
       <div className="ll-mode-selector" style={{ marginBottom: "20px" }}>
@@ -725,6 +725,18 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
         )}
       </div>
 
+      {/* Flash Card Practice */}
+      <div id="tab-flashcard" role="tabpanel" aria-labelledby="tab-flashcard-btn" hidden={activeTab !== "flashcard"}>
+        {activeTab === "flashcard" && (
+          <FlashCardPanel 
+            sourceLanguage={sourceLanguage}
+            targetLanguage={targetLanguage}
+            onError={handleError}
+            t={t}
+          />
+        )}
+      </div>
+
       {/* App Language, Add Language, AI character settings */}
       <div id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn" hidden={activeTab !== "settings"}>
         {activeTab === "settings" && (
@@ -745,18 +757,6 @@ export default function LanguageLearningPage({ locale, setLocale, t }) {
       {/* Ollama, Model Setup */}
       <div id="tab-ai-setup" role="tabpanel" aria-labelledby="tab-ai-setup-btn" hidden={activeTab !== "ai-setup"}>
         {activeTab === "ai-setup" && <AiSetupPanel t={t} />}
-      </div>
-
-      {/* Flash Card Practice */}
-      <div id="tab-flashcard" role="tabpanel" aria-labelledby="tab-flashcard-btn" hidden={activeTab !== "flashcard"}>
-        {activeTab === "flashcard" && (
-          <FlashCardPanel 
-            sourceLanguage={sourceLanguage}
-            targetLanguage={targetLanguage}
-            onError={handleError}
-            t={t}
-          />
-        )}
       </div>
     </main>
   );

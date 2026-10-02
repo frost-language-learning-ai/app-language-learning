@@ -28,7 +28,7 @@ Install and start Ollama from the application's **AI Setup** tab. The screen che
 ### Run
 
 ```bash
-npm run dev              # Starts the frontend, Electron, and the local API
+npm run dev              # Starts the frontend, Tauri, and the local API
 ```
 
 ## Environment Variables
@@ -44,12 +44,13 @@ npm run dev              # Starts the frontend, Electron, and the local API
 ## npm Scripts
 
 ```bash
-npm run dev              # Electron app development
+npm run dev              # Tauri desktop development
+npm run tauri:dev        # Tauri desktop only (API must be running)
 npm run server:dev       # API server only
 npm run react:start      # Frontend dev server only
 npm run react:build      # Frontend production build
 npm run server:test      # Run tests
-npm run dist:win         # Windows build
+npm run dist:win         # Tauri Windows installer build
 ```
 
 ## Documentation
@@ -71,7 +72,7 @@ npm run dist:win         # Windows build
 
 ## Tech Stack
 
-- **Frontend**: React + Vite (Web, iOS, Android via Capacitor, Desktop via Electron)
+- **Frontend**: React + Vite (Web, iOS, Android via Capacitor, Desktop via Tauri)
 - **Backend**: Express.js + PostgreSQL with pgvector
 - **Local AI**: Ollama + Gemma3 4B (generation), embedding-gemma (embeddings), Whisper (transcription)
 
@@ -81,9 +82,15 @@ npm run dist:win         # Windows build
 - Gemma: Google's open source, completely free
 - All local processing (zero cloud costs)
 
-## License
+## **License**
 
 Free for personal and commercial use.
 However, you need to contact the author and developer for commercial use.
 
-Please see the [LICENSE](LICENSE) file for more details.
+
+### **Support**
+
+If you find this app useful, please consider supporting its development. 
+Your support helps maintain and improve the app.
+
+Support: <a href="https://github.com/sponsors/KFrost-Sponsor" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; cursor: pointer;">GitHub Sponsors</a>
